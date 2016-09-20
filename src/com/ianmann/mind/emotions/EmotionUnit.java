@@ -1,4 +1,4 @@
-package com.ianmann.mind;
+package com.ianmann.mind.emotions;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,24 +14,24 @@ import java.io.Serializable;
  * @author kirkp1ia
  *
  */
-public class Emotion implements Comparable<Emotion>, Serializable{
+public class EmotionUnit implements Comparable<EmotionUnit>, Serializable{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public static Emotion LIVID = new Emotion("Livid", 1);
-	public static Emotion MAD = new Emotion("Mad", 2);
-	public static Emotion DEPRESSED = new Emotion("Depressed", 1);
-	public static Emotion SAD = new Emotion("Sad", 2);
-	public static Emotion DISAPOINTED = new Emotion("Disapointed", 3);
-	public static Emotion NEUTRAL = new Emotion("Neutral", 4);
-	public static Emotion HOPEFUL = new Emotion("Hopeful", 5);
-	public static Emotion CONTENT = new Emotion("Content", 6);
-	public static Emotion GLAD = new Emotion("Glad", 7);
-	public static Emotion FUNNY = new Emotion("Funny", 7);
-	public static Emotion ECSTATIC = new Emotion("Ecstatic", 8);
+	public static EmotionUnit LIVID = new EmotionUnit("Livid", 1);
+	public static EmotionUnit MAD = new EmotionUnit("Mad", 2);
+	public static EmotionUnit DEPRESSED = new EmotionUnit("Depressed", 1);
+	public static EmotionUnit SAD = new EmotionUnit("Sad", 2);
+	public static EmotionUnit DISAPOINTED = new EmotionUnit("Disapointed", 3);
+	public static EmotionUnit NEUTRAL = new EmotionUnit("Neutral", 4);
+	public static EmotionUnit HOPEFUL = new EmotionUnit("Hopeful", 5);
+	public static EmotionUnit CONTENT = new EmotionUnit("Content", 6);
+	public static EmotionUnit GLAD = new EmotionUnit("Glad", 7);
+	public static EmotionUnit FUNNY = new EmotionUnit("Funny", 7);
+	public static EmotionUnit ECSTATIC = new EmotionUnit("Ecstatic", 8);
 
 	/**
 	 * Name given to emotion e.g.
@@ -45,12 +45,12 @@ public class Emotion implements Comparable<Emotion>, Serializable{
 	 */
 	private int desire;
 	
-	private Emotion(String _name, int _desire) {
+	private EmotionUnit(String _name, int _desire) {
 		this.name = _name;
 		this.desire = _desire;
 	}
 	
-	public int compareTo(Emotion o) {
+	public int compareTo(EmotionUnit o) {
 		return this.desire - o.desire;
 	}
 	
@@ -69,13 +69,13 @@ public class Emotion implements Comparable<Emotion>, Serializable{
 		return baos.toString();
 	}
 	
-	public static Emotion deserialize(String _serializedObject) {
-		Emotion em = null;
+	public static EmotionUnit deserialize(String _serializedObject) {
+		EmotionUnit em = null;
 		try {
 			byte[] b = _serializedObject.getBytes();
 			ByteArrayInputStream bais = new ByteArrayInputStream(b);
 			ObjectInputStream ois = new ObjectInputStream(bais);
-			em = (Emotion) ois.readObject();
+			em = (EmotionUnit) ois.readObject();
 		} catch (IOException e) {
 		} catch (ClassNotFoundException e) {
 		}

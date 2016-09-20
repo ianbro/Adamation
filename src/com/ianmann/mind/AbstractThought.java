@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import com.ianmann.mind.core.Constants;
+import com.ianmann.mind.emotions.EmotionUnit;
 
 /**
  * Root class for all thoughts. Every thought object
@@ -37,16 +38,16 @@ public abstract class AbstractThought {
 	public File location;
 	
 	/**
-	 * Emotion that is associated with this thought
+	 * EmotionUnit that is associated with this thought
 	 */
-	private Emotion associatedEmotion;
+	private EmotionUnit associatedEmotion;
 	
 	/**
 	 * Create Abstract thought with a thought linked to it.
 	 * @param _linkedThought
 	 * @param _associated
 	 */
-	public AbstractThought(AbstractThought _linkedThought, Emotion _associated) {
+	public AbstractThought(AbstractThought _linkedThought, EmotionUnit _associated) {
 		this.associatedThoughts = new ArrayList<File>();
 		this.addThoughtPathway(_linkedThought);
 		

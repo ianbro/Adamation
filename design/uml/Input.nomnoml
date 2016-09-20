@@ -1,0 +1,46 @@
+[Input|
+[Input|
+* All stimuli as raw input
+* Each one will throw flags
+w/data for use by Selective
+Attention such as source and
+type (i.e. communication,
+observation)
+]
+[Router|
+*parse out the stimulant
+and determin the nature of
+the stimulant. Then send that
+stimulant to the processor
+with the details
+]
+[Selective Attention|
+*Decides which stimuli to
+send to the router.
+* rank importance on the
+following:
+	1. Interest
+    2. Unusualness
+]
+[Short Term Storage|
+*Router will grab corresponding
+stimulant and send the stimulant
+to the processor
+]
+[Language Processor|
+* If the stimulant is a message
+(i.e. communication from another
+entity) then get message from
+router and parse it out into
+a form readable by this AI.
+Then send it back to the Router.
+]
+
+[Router] <- [Selective Attention]
+[Selective Attention] -o [Input]
+
+[Router] --o [Language Processor]
+[Router] -o [Short Term Storage]
+]
+
+[Input] -> [Processor]

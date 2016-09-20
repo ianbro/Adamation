@@ -1,0 +1,8 @@
+{
+	"STORAGE": {
+		"ROOT": "mind/storage/",
+		"STIMULANTS": "stimulants/",
+		"THOUGHT_LINKS": "links/",
+		"THOUGHTS": "thoughts/"
+	}
+}

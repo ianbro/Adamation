@@ -15,7 +15,7 @@ public abstract class TestThoughtRelationships {
 		Constants.readStorageVariables();
 
 		System.out.println(Emotion.CONTENT.serialized().getBytes().length * 1000000);
-		Stimulant s = new Stimulant("Hello", null);
+		Stimulant s = new Stimulant("Communication", null);
 	}
 
 }

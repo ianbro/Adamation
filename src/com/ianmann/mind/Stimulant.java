@@ -47,6 +47,10 @@ public class Stimulant {
 		}
 	}
 	
+	/**
+	 * Returns the link to the corresponding thought
+	 * @return
+	 */
 	private ThoughtLink getThoughtFromFile() {
 		return ThoughtLink.deserialize(this.linkToThought);
 	}

@@ -9,7 +9,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.util.Scanner;
+
+import com.ianmann.mind.core.Constants;
 
 public class ThoughtLink implements Serializable {
 
@@ -32,7 +37,40 @@ public class ThoughtLink implements Serializable {
 	
 	public ThoughtLink(File _resultThoughtFile) {
 		this.resultingThought = _resultThoughtFile;
-		this.save();
+		
+		this.location = new File(this.getFileLocation());
+		
+		try {
+			Files.createFile(this.location.toPath());
+			this.save();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Retrieve the location to the file containing this Thought Link
+	 */
+	public String getFileLocation() {
+		if (this.location == null) {
+			Scanner s;
+			try {
+				s = new Scanner(new File(Constants.LINK_ROOT + "ids"));
+				int next = s.nextInt();
+				s.close();
+				PrintWriter p = new PrintWriter(new File(Constants.LINK_ROOT + "ids"));
+				p.print(next+1);
+				p.close();
+				return Constants.LINK_ROOT + String.valueOf(next) + ".tlink";
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+		} else {
+			return this.location.getPath();
+		}
 	}
 	
 	/**

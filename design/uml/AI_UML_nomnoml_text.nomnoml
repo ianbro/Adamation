@@ -1,0 +1,58 @@
+[Thought Process|
+
+[Input|*Could be external
+or internal] -> [Primary Receiver]
+
+[Short Term Storage] o--> [Permenant Storage]
+
+[Primary Receiver] -> [Thought Parser]
+[Thought Parser] -o [Short Term Storage]
+[Thought Parser] -> [Primary Receiver]
+
+[Processor|
+	*Takes message in reciever
+	and decides what thought
+	best relates to that message
+|
+[Stimulant|
+[1: Coresponding Thought?]->[No]
+[1: Coresponding Thought?]->[Yes]
+[2: Retrieve corosponding; thought]
+[Yes] -> [2: Retrieve corosponding; thought]
+[No] -> [2: Add to Short Term;storage|
+*Retrieve Stimulant and
+sets the coresponding
+thought. Stores both
+in Short Term Storage]
+[2: Add to Short Term;storage] -> [Ask for meaning]
+[Ask for meaning] -> [2: Add to Short Term;storage]
+[2: Add to Short Term;storage] -> [2: Retrieve corosponding; thoughts]
+[2: Retrieve corosponding; thoughts] -> [Respond]
+]]
+
+[Permenant Storage|*List of Thoughts that map to eachother]
+
+[Processor] -o [Primary Receiver]
+[Processor] -> [Short Term Storage]
+[Processor] -> [Output]
+]
+
+
+
+
+
+
+[Emotion|
+- name
+- desire_rating
+]
+
+[Thought|
+- chain of thoughts
+- Associated emotion
+- Associated response
+]
+
+[Stimulant|
+- Associated thought
+]

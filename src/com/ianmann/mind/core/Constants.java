@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import com.ianmann.utils.utilities.Utilities;
+import com.ianmann.utils.utilities.Files;
 
 public abstract class Constants {
 
@@ -18,7 +18,7 @@ public abstract class Constants {
 	private static File constantsFile = new File("constants.json");
 	
 	public static void readStorageVariables() throws FileNotFoundException, ParseException {
-		JSONObject jsonConstants = Utilities.json(Constants.constantsFile);
+		JSONObject jsonConstants = (JSONObject) Files.json(Constants.constantsFile);
 		Constants.STORAGE_ROOT = (String) ((JSONObject) jsonConstants.get("STORAGE")).get("ROOT");
 		Constants.STIMULANT_ROOT = Constants.STORAGE_ROOT + (String) ((JSONObject) jsonConstants.get("STORAGE")).get("STIMULANTS");
 		Constants.LINK_ROOT = Constants.STORAGE_ROOT + (String) ((JSONObject) jsonConstants.get("STORAGE")).get("THOUGHT_LINKS");

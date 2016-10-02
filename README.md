@@ -5,4 +5,4 @@ AI designed for conversation with emotional reactions
 	
 	The Adamation will have a folder containing it's long term memory. It will also have a smaller place for short term memory. This is essentially the minds RAM. A processor works between these two to make sense of the short term memory and place it into long term memory.
 	
-	Adamation design umls can be found in the design folder of this project.
+	Adamation design umls can be found in the design folder of this project. Style preferences are found in design/written_thoughts/style_preferences.txt

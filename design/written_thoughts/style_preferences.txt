@@ -1,0 +1,19 @@
+- Parameters should be preceeded by "_" for ease of reading. We then will know by the "_" if the variable was passed in or if it was created elsewhere.
+- Use "this" when referring to attributes within the class of an object. This makes it clearer that it refers to an attribute
+- Abuse methods. If a huge, complicated block of code can be put into a separate method, or even broken up even more into several methods and called, don't be afraid to do so. Also, if a block of code is reused at least once, put it in a method so as not to violate DRY.
+- Use
+
+myMethod {
+	...
+}
+	NOT
+myMethod
+{
+	...
+}
+- Indent correctly
+- Abuse comments and javadocs. Every method should have a javadoc.
+- Use camelCase for variable names and method names. Use PascalCase for class names. Use ALL_CAPS for constants.
+- If a class uses methods that another class uses and this is recurring and it doesn't make sense to use inheritance, use Interfaces.
+- For branch naming, if an issue exists for it, name it with the issue number first, then description. e.g. 13_my_brance
+- Use whitespace to separate chunks of code for clarity.

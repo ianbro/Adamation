@@ -1,0 +1,5 @@
+I think a good idea for this is to save all thought files in a flat file structure but then have a file that links different categories to those files.
+
+For instance, the storage folder may contain a file for different dogs, different actions and kinds of apples. The all are stored in the same folder regardless of their nature. but then, we would have a file that is in a categorical hierarchy structure and each category will contain links to different thought's files.
+
+To cut back on time used retrieving the file, we can make this a custom file layout using binary file formats of our liking.

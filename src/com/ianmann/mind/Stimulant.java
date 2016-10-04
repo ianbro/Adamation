@@ -8,10 +8,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.attribute.FileAttribute;
+import java.util.Arrays;
 
 import com.ianmann.mind.core.Constants;
+import com.ianmann.utils.utilities.Files;
 
 /**
  * Representation of an event that triggers a thought
@@ -24,22 +24,22 @@ public class Stimulant {
 	/**
 	 * The thought that is activated by this
 	 * stimulant. This file contains an instance
-	 * of {@link ThoughtLink}.
+	 * of {@link NeuralPathway}.
 	 */
-	private File linkToThought;
+	private File reaction;
 	
 	/**
 	 * File in which this object is stored.
 	 */
 	public File location;
 	
-	public Stimulant(String identifyer, File _thoughtLink) {
-		this.linkToThought = _thoughtLink;
+	public Stimulant(String _identifyer, Neuron _reactionNeuron) {
+		this.reaction = new NeuralPathway(_reactionNeuron.location).location;
 		
-		this.location = new File(Constants.STIMULANT_ROOT + identifyer + ".stim");
+		this.location = new File(Constants.STIMULANT_ROOT + _identifyer + ".stim");
 		
 		try {
-			Files.createFile(this.location.toPath());
+			java.nio.file.Files.createFile(this.location.toPath());
 			this.save();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -51,19 +51,28 @@ public class Stimulant {
 	 * Returns the link to the corresponding thought
 	 * @return
 	 */
-	private ThoughtLink getThoughtFromFile() {
-		return ThoughtLink.deserialize(this.linkToThought);
+	private NeuralPathway getNeuralPathwayFromFile() {
+		return NeuralPathway.deserialize(this.reaction);
+	}
+	
+	/**
+	 * Returns the Neuron object which represents the reaction
+	 * of the AI to this stimulant.
+	 * @return
+	 */
+	public NeuralPathway getReaction() {
+		return this.getNeuralPathwayFromFile();
 	}
 	
 	/**
 	 * Print this object to the file at {@link Stimulant.location}
 	 */
 	private void save() {
-		String serializedStimulant = this.serialized();
+		byte[] serializedStimulant = this.serialized();
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(this.location);
-			fos.write(serializedStimulant.getBytes());
+			fos.write(serializedStimulant);
 			fos.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -71,7 +80,7 @@ public class Stimulant {
 		}
 	}
 	
-	public String serialized() {
+	public byte[] serialized() {
 		ByteArrayOutputStream baos = null;
 		try {
 			baos = new ByteArrayOutputStream();
@@ -79,18 +88,24 @@ public class Stimulant {
 			oos.writeObject(this);
 			oos.flush();
 		} catch (IOException e) {}
-		return baos.toString();
+		return baos.toByteArray();
 	}
 	
-	public static Stimulant deserialize(String _serializedObject) {
+	/**
+	 * Serialize this object as a java object
+	 * @param _serializedObject
+	 * @return
+	 */
+	public static Stimulant deserialize(byte[] _serializedObject) {
 		Stimulant s = null;
 		try {
-			byte[] b = _serializedObject.getBytes();
-			ByteArrayInputStream bais = new ByteArrayInputStream(b);
+			ByteArrayInputStream bais = new ByteArrayInputStream(_serializedObject);
 			ObjectInputStream ois = new ObjectInputStream(bais);
 			s = (Stimulant) ois.readObject();
 		} catch (IOException e) {
+			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 		
 		return s;
@@ -104,10 +119,11 @@ public class Stimulant {
 	 */
 	public static Stimulant deserialize(File _inputFile) {
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(_inputFile));
-			Stimulant s = (Stimulant) ois.readObject();
+			byte[] fileBytes = Files.readFile(_inputFile);
+			Stimulant s = deserialize(fileBytes);
+			System.out.println(s);
 			return s;
-		} catch (IOException | ClassNotFoundException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;

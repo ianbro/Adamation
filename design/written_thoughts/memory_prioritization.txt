@@ -1,0 +1,21 @@
+	The human mind has a way of making certain responses automatic. After doing something repetitively, the mind almost instantaneously goes to this response upon the cause. For instance, when a you hear your name called, your mind is so use to responding with the question "what" that sometimes you automatically respond in that manner. In the same way, you react in unique ways because that's how you have always reacted in certain situations. It just feels natural.
+	
+	To mimic this, we need to create a way for the mind to prioritize responses as well as make the responses more natural. The synaptic connections between action and reaction in your mind gets wider with use like a pathway making that pathway more natural for your mind to travel. In the same way, this AI should make links between thoughts with priorities so that if an action occurs that the AI is use to, it has a natural way of responding. This will build a personality in the AI as well.
+	
+	My initial thought is to do this simply with an int where a higher int will have a higher priority. At a certain threshold, the mind will simply bypass any thought chain and "naturally" respond in a certain way moving straight to reaction. However, if the int is not yet at that threshold, then the mind will start to follow the thought links.
+	
+	ex.
+	
+				[input] -> [thought] -> [thought] -> [thought] -> [reaction/output 1]
+								|
+								v
+						   [higher priority thought] -> [thought] -> [reaction/output 2]
+						   
+						   
+		After following the thought process to "higher priority thought" repetitively, it will bypass the chain of thought. so instead, it will look like:
+		
+		
+				[input] -> [thought] -> [thought] -> [thought] -> [reaction/output 1]
+								|
+								v
+						   [reaction/output 2] **Will happen every time unless the AI expects it and makes a conscious decision not to follow this path before hand. More on this later.

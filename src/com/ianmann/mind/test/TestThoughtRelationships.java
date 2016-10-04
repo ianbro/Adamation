@@ -1,9 +1,11 @@
 package com.ianmann.mind.test;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.json.simple.parser.ParseException;
 
+import com.ianmann.mind.Neuron;
 import com.ianmann.mind.Stimulant;
 import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.emotions.EmotionUnit;
@@ -14,8 +16,12 @@ public abstract class TestThoughtRelationships {
 		// TODO Auto-generated method stub
 		Constants.readStorageVariables();
 
-		System.out.println(EmotionUnit.CONTENT.serialized().getBytes().length * 1000000);
-		Stimulant s = new Stimulant("Communication", null);
+		Neuron n1 = new Neuron(null, EmotionUnit.CONTENT);
+		Neuron n2 = new Neuron(n1, EmotionUnit.CONTENT);
+		
+		Stimulant comStim = new Stimulant("Communication", n2);
+		
+		System.out.println(comStim.getReaction());
 	}
 
 }

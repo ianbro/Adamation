@@ -10,27 +10,29 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.emotions.EmotionUnit;
+import com.ianmann.utils.utilities.Files;
 
 /**
  * Root class for all thoughts. Every thought object
- * will inherit {@code AbstractThought}.
+ * will inherit {@code Neuron}.
  * @author kirkp1ia
  *
  */
-public abstract class AbstractThought {
+public class Neuron {
 
 	/**
-	 * References to any thought that is linked to this thought.
+	 * References to any neuron that is linked to this neuron.
 	 * The AI will use this list to link through the thoughts.
-	 * The file it points to contains one {@code ThoughtLink} object.
+	 * The file it points to contains one {@code NeuralPathway} object
+	 * and can be thought of as a synaptic connection.
 	 */
-	private ArrayList<File> associatedThoughts;
+	private ArrayList<File> SynapticEndings;
 	
 	/**
 	 * File in which this object is stored.
@@ -43,20 +45,20 @@ public abstract class AbstractThought {
 	private EmotionUnit associatedEmotion;
 	
 	/**
-	 * Create Abstract thought with a thought linked to it.
+	 * Create Neuron with an existing neuron linked to it.
 	 * @param _linkedThought
 	 * @param _associated
 	 */
-	public AbstractThought(AbstractThought _linkedThought, EmotionUnit _associated) {
-		this.associatedThoughts = new ArrayList<File>();
-		this.addThoughtPathway(_linkedThought);
+	public Neuron(Neuron _linkedThought, EmotionUnit _associated) {
+		this.SynapticEndings = new ArrayList<File>();
+		this.addNeuralPathway(_linkedThought);
 		
 		this.associatedEmotion = _associated;
 		
 		this.location = new File(this.getFileLocation());
 
 		try {
-			Files.createFile(this.location.toPath());
+			java.nio.file.Files.createFile(this.location.toPath());
 			this.save();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -65,19 +67,19 @@ public abstract class AbstractThought {
 	}
 	
 	/**
-	 * Retrieve the location to the file containing this Abstract Thought
+	 * Retrieve the location to the file containing this Neuron
 	 */
-	public String getFileLocation() {
+	private String getFileLocation() {
 		if (this.location == null) {
 			Scanner s;
 			try {
-				s = new Scanner(new File(Constants.THOUGHT_ROOT + "ids"));
+				s = new Scanner(new File(Constants.NEURON_ROOT + "ids"));
 				int next = s.nextInt();
 				s.close();
-				PrintWriter p = new PrintWriter(new File(Constants.THOUGHT_ROOT + "ids"));
+				PrintWriter p = new PrintWriter(new File(Constants.NEURON_ROOT + "ids"));
 				p.print(next+1);
 				p.close();
-				return Constants.THOUGHT_ROOT + String.valueOf(next) + ".tlink";
+				return Constants.NEURON_ROOT + String.valueOf(next) + ".nrn";
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -92,20 +94,22 @@ public abstract class AbstractThought {
 	 * Make new pathway to a thought.
 	 * @param _thought
 	 */
-	public void addThoughtPathway(AbstractThought _thought) {
-		ThoughtLink t = new ThoughtLink(_thought.location);
-		this.associatedThoughts.add(t.location);
+	public void addNeuralPathway(Neuron _thought) {
+		if (_thought != null) {
+			NeuralPathway t = new NeuralPathway(_thought.location);
+			this.SynapticEndings.add(t.location);
+		}
 	}
 	
 	/**
-	 * Print this object to the file at {@link AbstractThought.location}
+	 * Print this object to the file at {@link Neuron.location}
 	 */
 	private void save() {
-		String serializedThought = this.serialized();
+		byte[] serializedThought = this.serialized();
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(this.location);
-			fos.write(serializedThought.getBytes());
+			fos.write(serializedThought);
 			fos.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -113,7 +117,7 @@ public abstract class AbstractThought {
 		}
 	}
 	
-	public String serialized() {
+	public byte[] serialized() {
 		ByteArrayOutputStream baos = null;
 		try {
 			baos = new ByteArrayOutputStream();
@@ -121,35 +125,42 @@ public abstract class AbstractThought {
 			oos.writeObject(this);
 			oos.flush();
 		} catch (IOException e) {}
-		return baos.toString();
-	}
-	
-	public static AbstractThought deserialize(String _serializedObject) {
-		AbstractThought t = null;
-		try {
-			byte[] b = _serializedObject.getBytes();
-			ByteArrayInputStream bais = new ByteArrayInputStream(b);
-			ObjectInputStream ois = new ObjectInputStream(bais);
-			t = (AbstractThought) ois.readObject();
-		} catch (IOException e) {
-		} catch (ClassNotFoundException e) {
-		}
-		
-		return t;
+		return baos.toByteArray();
 	}
 	
 	/**
-	 * Reads a file with a serialized {@link AbstractThought} object in it
-	 * and parses it into an instance of {@link AbstractThought}
+	 * Serialize this object as a java object
+	 * @param _serializedObject
+	 * @return
+	 */
+	public static Neuron deserialize(byte[] _serializedObject) {
+		Neuron n = null;
+		try {
+			ByteArrayInputStream bais = new ByteArrayInputStream(_serializedObject);
+			ObjectInputStream ois = new ObjectInputStream(bais);
+			n = (Neuron) ois.readObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		return n;
+	}
+	
+	/**
+	 * Reads a file with a serialized {@link Neuron} object in it
+	 * and parses it into an instance of {@link Neuron}
 	 * @param _inputFile
 	 * @return
 	 */
-	public static AbstractThought deserialize(File _inputFile) {
+	public static Neuron deserialize(File _inputFile) {
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(_inputFile));
-			AbstractThought t = (AbstractThought) ois.readObject();
-			return t;
-		} catch (IOException | ClassNotFoundException e) {
+			byte[] fileBytes = Files.readFile(_inputFile);
+			Neuron n = deserialize(fileBytes);
+			System.out.println(n);
+			return n;
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;

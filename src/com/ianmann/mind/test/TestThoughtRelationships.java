@@ -19,9 +19,10 @@ public abstract class TestThoughtRelationships {
 		Neuron n1 = new Neuron(null, EmotionUnit.CONTENT);
 		Neuron n2 = new Neuron(n1, EmotionUnit.CONTENT);
 		
-		Stimulant comStim = new Stimulant("Communication", n2);
+//		Stimulant comStim = new Stimulant("Communication", n2);
+		Stimulant comStim = Stimulant.deserialize(new File(Constants.STIMULANT_ROOT + "Communication.stim"));
 		
-		System.out.println(comStim.getReaction());
+		System.out.println(comStim.getReaction().fireSynapse());
 	}
 
 }

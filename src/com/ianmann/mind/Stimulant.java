@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import com.ianmann.mind.core.Constants;
@@ -19,7 +20,7 @@ import com.ianmann.utils.utilities.Files;
  * @author kirkp1ia
  *
  */
-public class Stimulant {
+public class Stimulant implements Serializable {
 	
 	/**
 	 * The thought that is activated by this

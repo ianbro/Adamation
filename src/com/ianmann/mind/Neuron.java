@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -24,7 +25,7 @@ import com.ianmann.utils.utilities.Files;
  * @author kirkp1ia
  *
  */
-public class Neuron {
+public class Neuron implements Serializable {
 
 	/**
 	 * References to any neuron that is linked to this neuron.

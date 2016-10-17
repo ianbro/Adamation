@@ -1,0 +1,3 @@
+I would like the AI to have a language processing center. This class will handle converting a chain of thoughts to language.
+
+Adamation should be able to follow rules and patterns. This means that certain thoughts will represent pattern steps that the mind will follow with data. This will lend to the acquisition of language.

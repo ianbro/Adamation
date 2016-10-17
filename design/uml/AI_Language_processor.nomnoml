@@ -1,0 +1,46 @@
+[Wants to say: "What is your name?"|
+
+[Language processor]
+
+[Neuron1|
+-question]
+
+[Neuron2|
+-name]
+
+[Neuron3|
+-other person]
+
+[Neuron4|
+-attribute]
+
+[Neuron5|
+-Request
+information]
+
+[Neuron1]->[Neuron5]
+[Neuron5]->[Neuron3]
+[Neuron3]->[Neuron4]
+[Neuron4]->[Neuron2]
+
+[Neuron2]->[Language processor]
+
+[Language processor]->["What"]
+
+["What"]-->[Neuron5]
+["What"]-->[Neuron2]
+
+["is"]-->[Neuron2]
+
+["your"]-->[Neuron3]
+
+["name"]-->[Neuron2]
+
+["?"]-->[Neuron1]
+
+["What"]->["is"]
+["is"]->["your"]
+["your"]->["name"]
+["name"]->["?"]
+
+]

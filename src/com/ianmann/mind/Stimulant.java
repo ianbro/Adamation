@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import com.ianmann.mind.core.Constants;
+import com.ianmann.mind.utils.Serializer;
 import com.ianmann.utils.utilities.Files;
 
 /**
@@ -69,9 +70,9 @@ public class Stimulant implements Serializable {
 	 * Print this object to the file at {@link Stimulant.location}
 	 */
 	private void save() {
-		byte[] serializedStimulant = this.serialized();
 		FileOutputStream fos = null;
 		try {
+			byte[] serializedStimulant = Serializer.serialize(this);
 			fos = new FileOutputStream(this.location);
 			fos.write(serializedStimulant);
 			fos.close();
@@ -79,37 +80,6 @@ public class Stimulant implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public byte[] serialized() {
-		ByteArrayOutputStream baos = null;
-		try {
-			baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(this);
-			oos.flush();
-		} catch (IOException e) {}
-		return baos.toByteArray();
-	}
-	
-	/**
-	 * Serialize this object as a java object
-	 * @param _serializedObject
-	 * @return
-	 */
-	public static Stimulant deserialize(byte[] _serializedObject) {
-		Stimulant s = null;
-		try {
-			ByteArrayInputStream bais = new ByteArrayInputStream(_serializedObject);
-			ObjectInputStream ois = new ObjectInputStream(bais);
-			s = (Stimulant) ois.readObject();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		return s;
 	}
 	
 	/**
@@ -121,8 +91,7 @@ public class Stimulant implements Serializable {
 	public static Stimulant deserialize(File _inputFile) {
 		try {
 			byte[] fileBytes = Files.readFile(_inputFile);
-			Stimulant s = deserialize(fileBytes);
-			System.out.println(s);
+			Stimulant s = Serializer.deserialize(Stimulant.class, fileBytes);
 			return s;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

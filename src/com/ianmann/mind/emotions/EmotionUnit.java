@@ -57,30 +57,5 @@ public class EmotionUnit implements Comparable<EmotionUnit>, Serializable{
 	public String toString() {
 		return this.name;
 	}
-	
-	public String serialized() {
-		ByteArrayOutputStream baos = null;
-		try {
-			baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(this);
-			oos.flush();
-		} catch (IOException e) {}
-		return baos.toString();
-	}
-	
-	public static EmotionUnit deserialize(String _serializedObject) {
-		EmotionUnit em = null;
-		try {
-			byte[] b = _serializedObject.getBytes();
-			ByteArrayInputStream bais = new ByteArrayInputStream(b);
-			ObjectInputStream ois = new ObjectInputStream(bais);
-			em = (EmotionUnit) ois.readObject();
-		} catch (IOException e) {
-		} catch (ClassNotFoundException e) {
-		}
-		
-		return em;
-	}
 
 }

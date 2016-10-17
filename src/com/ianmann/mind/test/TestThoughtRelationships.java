@@ -16,13 +16,13 @@ public abstract class TestThoughtRelationships {
 		// TODO Auto-generated method stub
 		Constants.readStorageVariables();
 
-		Neuron n1 = new Neuron(null, EmotionUnit.CONTENT);
-		Neuron n2 = new Neuron(n1, EmotionUnit.CONTENT);
+//		Neuron n1 = new Neuron(null, EmotionUnit.CONTENT);
+//		Neuron n2 = new Neuron(n1, EmotionUnit.CONTENT);
 		
 //		Stimulant comStim = new Stimulant("Communication", n2);
 		Stimulant comStim = Stimulant.deserialize(new File(Constants.STIMULANT_ROOT + "Communication.stim"));
 		
-		System.out.println(comStim.getReaction().fireSynapse());
+		System.out.println(comStim);
 	}
 
 }

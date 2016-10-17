@@ -15,6 +15,12 @@ public abstract class Constants {
 	public static String PATHWAY_ROOT;
 	public static String NEURON_ROOT;
 	
+	/**
+	 * Maximum number of memory elements that should be in
+	 * memory at a time.
+	 */
+	public static int SHORT_TERM_CAPACITY;
+	
 	private static File constantsFile = new File("constants.json");
 	
 	public static void readStorageVariables() throws FileNotFoundException, ParseException {
@@ -23,6 +29,7 @@ public abstract class Constants {
 		Constants.STIMULANT_ROOT = Constants.STORAGE_ROOT + (String) ((JSONObject) jsonConstants.get("STORAGE")).get("STIMULANTS");
 		Constants.PATHWAY_ROOT = Constants.STORAGE_ROOT + (String) ((JSONObject) jsonConstants.get("STORAGE")).get("NEURAL_PATHWAYS");
 		Constants.NEURON_ROOT = Constants.STORAGE_ROOT + (String) ((JSONObject) jsonConstants.get("STORAGE")).get("NEURONS");
+		Constants.SHORT_TERM_CAPACITY = (int) jsonConstants.get("SHORT_TERM_CAPACITY");
 		
 	}
 	

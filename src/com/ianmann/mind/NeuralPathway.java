@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 import com.ianmann.mind.core.Constants;
+import com.ianmann.mind.utils.Serializer;
 import com.ianmann.utils.utilities.Files;
 
 public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
@@ -108,9 +109,9 @@ public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
 	 * Print this object to the file at {@link NeuralPathway.location}
 	 */
 	private void save() {
-		byte[] serializedLink = this.serialized();
 		FileOutputStream fos = null;
 		try {
+			byte[] serializedLink = Serializer.serialize(this);
 			fos = new FileOutputStream(this.location);
 			fos.write(serializedLink);
 			fos.close();
@@ -118,37 +119,6 @@ public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public byte[] serialized() {
-		ByteArrayOutputStream baos = null;
-		try {
-			baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(this);
-			oos.flush();
-		} catch (IOException e) {}
-		return baos.toByteArray();
-	}
-	
-	/**
-	 * Serialize this object as a java object
-	 * @param _serializedObject
-	 * @return
-	 */
-	public static NeuralPathway deserialize(byte[] _serializedObject) {
-		NeuralPathway l = null;
-		try {
-			ByteArrayInputStream bais = new ByteArrayInputStream(_serializedObject);
-			ObjectInputStream ois = new ObjectInputStream(bais);
-			l = (NeuralPathway) ois.readObject();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		return l;
 	}
 	
 	/**
@@ -160,8 +130,7 @@ public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
 	public static NeuralPathway deserialize(File _inputFile) {
 		try {
 			byte[] fileBytes = Files.readFile(_inputFile);
-			NeuralPathway l = deserialize(fileBytes);
-			System.out.println(l);
+			NeuralPathway l = Serializer.deserialize(NeuralPathway.class, fileBytes);
 			return l;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

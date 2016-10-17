@@ -17,6 +17,7 @@ import java.util.Scanner;
 
 import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.emotions.EmotionUnit;
+import com.ianmann.mind.utils.Serializer;
 import com.ianmann.utils.utilities.Files;
 
 /**
@@ -106,9 +107,9 @@ public class Neuron implements Serializable {
 	 * Print this object to the file at {@link Neuron.location}
 	 */
 	private void save() {
-		byte[] serializedThought = this.serialized();
 		FileOutputStream fos = null;
 		try {
+			byte[] serializedThought = Serializer.serialize(this);
 			fos = new FileOutputStream(this.location);
 			fos.write(serializedThought);
 			fos.close();
@@ -116,37 +117,6 @@ public class Neuron implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public byte[] serialized() {
-		ByteArrayOutputStream baos = null;
-		try {
-			baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(this);
-			oos.flush();
-		} catch (IOException e) {}
-		return baos.toByteArray();
-	}
-	
-	/**
-	 * Serialize this object as a java object
-	 * @param _serializedObject
-	 * @return
-	 */
-	public static Neuron deserialize(byte[] _serializedObject) {
-		Neuron n = null;
-		try {
-			ByteArrayInputStream bais = new ByteArrayInputStream(_serializedObject);
-			ObjectInputStream ois = new ObjectInputStream(bais);
-			n = (Neuron) ois.readObject();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		return n;
 	}
 	
 	/**
@@ -158,8 +128,7 @@ public class Neuron implements Serializable {
 	public static Neuron deserialize(File _inputFile) {
 		try {
 			byte[] fileBytes = Files.readFile(_inputFile);
-			Neuron n = deserialize(fileBytes);
-			System.out.println(n);
+			Neuron n = Serializer.deserialize(Neuron.class, fileBytes);
 			return n;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

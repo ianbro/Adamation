@@ -1,4 +1,4 @@
-package com.ianmann.mind.test;
+package test.ianmann.mind;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -107,6 +107,9 @@ public class TextSensor extends Sensor {
 			
 			ShortTermMemory.addData(msg.getBytes(), this.memoryLocation);
 			
+			/*
+			 * Block that evaluates the input.
+			 */
 			if (header == HEADER_TALK) {
 				this.onTalk(msg);
 			}

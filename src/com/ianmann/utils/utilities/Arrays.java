@@ -12,4 +12,13 @@ public abstract class Arrays {
 		}
 		return bytes;
 	}
+	
+	public static byte[] unWrapByteArray(ArrayList<Byte> bs) {
+		byte[] bytes = new byte[bs.size()];
+		
+		for (int i = 0; i < bs.size(); i++) {
+			bytes[i] = bs.get(i);
+		}
+		return bytes;
+	}
 }

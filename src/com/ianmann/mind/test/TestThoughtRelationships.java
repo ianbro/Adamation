@@ -9,12 +9,14 @@ import com.ianmann.mind.Neuron;
 import com.ianmann.mind.Stimulant;
 import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.emotions.EmotionUnit;
+import com.ianmann.mind.storage.ShortTermMemory;
 
 public abstract class TestThoughtRelationships {
 
 	public static void main(String[] args) throws FileNotFoundException, ParseException {
 		// TODO Auto-generated method stub
 		Constants.readStorageVariables();
+		ShortTermMemory.initialize();
 
 //		Neuron n1 = new Neuron(null, EmotionUnit.CONTENT);
 //		Neuron n2 = new Neuron(n1, EmotionUnit.CONTENT);

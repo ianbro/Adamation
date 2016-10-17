@@ -29,7 +29,7 @@ public abstract class Constants {
 		Constants.STIMULANT_ROOT = Constants.STORAGE_ROOT + (String) ((JSONObject) jsonConstants.get("STORAGE")).get("STIMULANTS");
 		Constants.PATHWAY_ROOT = Constants.STORAGE_ROOT + (String) ((JSONObject) jsonConstants.get("STORAGE")).get("NEURAL_PATHWAYS");
 		Constants.NEURON_ROOT = Constants.STORAGE_ROOT + (String) ((JSONObject) jsonConstants.get("STORAGE")).get("NEURONS");
-		Constants.SHORT_TERM_CAPACITY = (int) jsonConstants.get("SHORT_TERM_CAPACITY");
+		Constants.SHORT_TERM_CAPACITY = (Long.valueOf((long) jsonConstants.get("SHORT_TERM_CAPACITY"))).intValue();
 		
 	}
 	

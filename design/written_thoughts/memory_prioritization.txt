@@ -19,3 +19,6 @@
 								|
 								v
 						   [reaction/output 2] **Will happen every time unless the AI expects it and makes a conscious decision not to follow this path before hand. More on this later.
+						   
+	
+	When the mind searches the possible neuron endings of a thought, after it finds one, keep thinking. If the mind finds one that is more adept to the situation, then send that again. The next processor will see that and drop the previously sent neuron and move onto the new one. This will allow the mind to "change it's mind" midway through a thought.

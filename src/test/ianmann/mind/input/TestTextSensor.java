@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import org.json.simple.parser.ParseException;
 
 import com.ianmann.mind.core.Constants;
-import com.ianmann.mind.input.TextSensor;
+import com.ianmann.mind.input.text.TextSensor;
 import com.ianmann.mind.storage.ShortTermMemory;
 
 public class TestTextSensor {

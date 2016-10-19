@@ -1,4 +1,4 @@
-package com.ianmann.mind.input;
+package com.ianmann.mind.input.text;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import com.ianmann.mind.input.Sensor;
 import com.ianmann.mind.storage.ShortTermMemory;
 
 /**
@@ -48,6 +49,8 @@ public class TextSensor extends Sensor {
 	public TextSensor(File _inputFile, int _memoryLocation) throws FileNotFoundException {
 		super(new FileInputStream(_inputFile), _memoryLocation);
 		this.inputFile = _inputFile;
+		
+		this.displayPrompt();
 	}
 
 	/**
@@ -59,6 +62,16 @@ public class TextSensor extends Sensor {
 	 */
 	public TextSensor(InputStream _inputStream, int _memoryLocation) throws FileNotFoundException {
 		super(_inputStream, _memoryLocation);
+		
+		this.displayPrompt();
+	}
+	
+	/**
+	 * Display the prompt on the console for the user
+	 * to input text.
+	 */
+	public void displayPrompt() {
+		System.out.print(">>> ");
 	}
 
 	@Override
@@ -105,7 +118,7 @@ public class TextSensor extends Sensor {
 				}
 			}
 			
-			ShortTermMemory.addData(msg.getBytes(), this.memoryLocation);
+			ShortTermMemory.addData(this.memoryLocation, msg.getBytes());
 			
 			/*
 			 * Block that evaluates the input.
@@ -113,6 +126,8 @@ public class TextSensor extends Sensor {
 			if (header == HEADER_TALK) {
 				this.onTalk(msg);
 			}
+			
+			this.displayPrompt();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -153,7 +168,7 @@ public class TextSensor extends Sensor {
 		}
 		
 		// Index of the space character after the header.
-		int headerEnd = 0;
+		int headerEnd = 1;
 		
 		for (int i = 0; i < _rawIn.length(); i++) {
 			if (_rawIn.charAt(i) == ' ') {

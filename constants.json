@@ -5,7 +5,9 @@
 		"NEURAL_PATHWAYS": "pathways/",
 		"NEURONS": "neurons/"
 	},
+	
 	"SHORT_TERM_CAPACITY": 15,
+	
 	"MEMORY_LOCATIONS": {
 		"INPUT_ADDRESSES": { "EYES": 0 }
 	}

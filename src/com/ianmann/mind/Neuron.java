@@ -62,7 +62,6 @@ public class Neuron implements Serializable {
 	public Neuron(Neuron _linkedThought, EmotionUnit _associated) {
 		this.initialize(_linkedThought, _associated, null);
 		this.associatedMorphemes = new String[0];
-		this.save();
 	}
 	
 	/**
@@ -75,7 +74,6 @@ public class Neuron implements Serializable {
 	public Neuron(Neuron _linkedThought, EmotionUnit _associated, String _label) {
 		this.initialize(_linkedThought, _associated, _label);
 		this.associatedMorphemes = new String[]{_label};
-		this.save();
 	}
 	
 	/**
@@ -91,13 +89,6 @@ public class Neuron implements Serializable {
 		this.associatedEmotion = _associated;
 		this.label = _label;
 		this.location = new File(this.getFileLocation());
-
-		try {
-			java.nio.file.Files.createFile(this.location.toPath());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	/**
@@ -178,6 +169,13 @@ public class Neuron implements Serializable {
 	private void save() {
 		FileOutputStream fos = null;
 		try {
+			try {
+				java.nio.file.Files.createFile(this.location.toPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			byte[] serializedThought = Serializer.serialize(this);
 			fos = new FileOutputStream(this.location);
 			fos.write(serializedThought);

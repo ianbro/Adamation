@@ -6,9 +6,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Scanner;
 
+import com.ianmann.mind.Neuron;
+import com.ianmann.mind.core.Constants;
+import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.input.Sensor;
+import com.ianmann.mind.input.TextIdentification;
+import com.ianmann.mind.patterns.language.text.TextProcessor;
 import com.ianmann.mind.storage.ShortTermMemory;
 
 /**
@@ -192,8 +198,15 @@ public class TextSensor extends Sensor {
 	 * @param _input
 	 */
 	private void onTalk(String _input) {
-		System.out.println(_input);
-		System.out.println(com.ianmann.utils.utilities.Arrays.wrapByteArray(ShortTermMemory.getData(this.memoryLocation)));
+		TextProcessor english = new TextProcessor(null, EmotionUnit.CONTENT, "processor_english", Neuron.deserialize(new File(Constants.NEURON_ROOT + "49.nrn")), this.memoryLocation);
+//		System.out.println(_input);
+//		System.out.println(Arrays.toString(english.delimit()));
+		
+		String[] sentence = english.delimit();
+		for (int i = 0; i < sentence.length; i++) {
+			String word = sentence[i];
+			System.out.println(Arrays.toString(TextIdentification.splitMorphemes(word)));
+		}
 	}
 
 }

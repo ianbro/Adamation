@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import org.json.simple.parser.ParseException;
 
 import com.ianmann.mind.core.Constants;
+import com.ianmann.mind.input.TextIdentification;
 import com.ianmann.mind.input.text.TextSensor;
 import com.ianmann.mind.storage.ShortTermMemory;
 
@@ -16,6 +17,7 @@ public class TestTextSensor {
 		// TODO Auto-generated method stub
 		Constants.readStorageVariables();
 		ShortTermMemory.initialize();
+		TextIdentification.initialize();
 
 		System.out.println("Loading sensor...");
 		

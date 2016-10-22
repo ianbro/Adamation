@@ -2,6 +2,7 @@ package com.ianmann.mind.patterns.language.text;
 
 import com.ianmann.mind.Neuron;
 import com.ianmann.mind.emotions.EmotionUnit;
+import com.ianmann.mind.input.TextIdentification;
 import com.ianmann.mind.storage.ShortTermMemory;
 
 /**
@@ -26,6 +27,16 @@ public class TextProcessor extends Neuron {
 	 * would be a space character.
 	 */
 	protected Neuron delimiter;
+	
+	/**
+	 * Thread used to return the neurons associated with the words and
+	 * morphemes stored in short term memory.
+	 */
+	protected Thread processingThread;
+	/**
+	 * Runnable class which will become the target for this.processingThread
+	 */
+	protected Runnable processingRunnable;
 
 	/**
 	 * Create a pattern processor and link it to data in short term memory
@@ -72,7 +83,51 @@ public class TextProcessor extends Neuron {
 	 * by the delimiter.
 	 * @return
 	 */
-	public String[] delimit() {
+	protected String[] delimit() {
 		return this.getInput().split(this.getDelimeter());
 	}
+	
+	/**
+	 * Return the array of words. Every thing will be split into morphemes
+	 * and words.
+	 * @return
+	 */
+	protected String[][] getSentenceDelimited() {
+		String[] delimitedSentence = this.delimit();
+		String[][] fullyDelimited = new String[delimitedSentence.length][];
+		
+		for (int i = 0; i < delimitedSentence.length; i++) {
+			String word = delimitedSentence[i];
+			
+			fullyDelimited[i] = TextIdentification.splitMorphemes(word);
+		}
+		
+		return fullyDelimited;
+	}
+	
+	/**
+	 * Fire up the thread that will process the sentence and determine it's meaning.
+	 */
+	public void process() {
+		this.processingRunnable = new TextProcessorThread();
+		this.processingThread = new Thread(this.processingRunnable);
+		this.processingThread.start();
+	}
+}
+
+/**
+ * Worker class that grabs the neurons for a sentence and determines
+ * what it means. The process should then output it to another process
+ * that will then evaluate the message and determine what to do with it.
+ * @author kirkp1ia
+ *
+ */
+class TextProcessorThread implements Runnable {
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

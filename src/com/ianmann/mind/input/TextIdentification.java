@@ -43,6 +43,12 @@ public abstract class TextIdentification {
 		}
 	}
 	
+	/**
+	 * Return the neuron representation of a morpheme.
+	 * @param _morpheme
+	 * @return
+	 * @throws MorphemeNotFound
+	 */
 	public static Neuron getNeuronForMorpheme(String _morpheme) throws MorphemeNotFound {
 		JSONObject currentKey = data;
 		for (String character : _morpheme.split("")) {
@@ -62,6 +68,12 @@ public abstract class TextIdentification {
 		}
 	}
 	
+	/**
+	 * Return the string representation of a morpheme.
+	 * @param n
+	 * @return
+	 * @throws MorphemeNotFound
+	 */
 	public static String getMorphemeForNeuron(Neuron n) throws MorphemeNotFound {
 		if (n.getAssociatedMorphemes().length > 0) {
 			/*
@@ -75,6 +87,11 @@ public abstract class TextIdentification {
 		}
 	}
 	
+	/**
+	 * returns whether or not a morpheme has been encountered.
+	 * @param _morpheme
+	 * @return
+	 */
 	public static boolean morphemeStored(String _morpheme) {
 		JSONObject currentKey = data;
 		for (String character : _morpheme.split("")) {
@@ -91,6 +108,13 @@ public abstract class TextIdentification {
 		}
 	}
 	
+	/**
+	 * Split a given word up into it's morphemes according to the
+	 * data in morphemes.json. This doesn't find the meanings of those
+	 * morphemes, just the morphemes themselves.
+	 * @param _word
+	 * @return
+	 */
 	public static String[] splitMorphemes(String _word) {
 		// Use morphemes.json to split _word into morphemes
 		ArrayList<String> morphemes = new ArrayList<String>();

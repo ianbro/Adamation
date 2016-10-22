@@ -202,10 +202,11 @@ public class TextSensor extends Sensor {
 //		System.out.println(_input);
 //		System.out.println(Arrays.toString(english.delimit()));
 		
-		String[] sentence = english.delimit();
+		String[][] sentence = english.getSentenceDelimited();
+		
 		for (int i = 0; i < sentence.length; i++) {
-			String word = sentence[i];
-			System.out.println(Arrays.toString(TextIdentification.splitMorphemes(word)));
+			String[] word = sentence[i];
+			System.out.println(Arrays.toString(word));
 		}
 	}
 

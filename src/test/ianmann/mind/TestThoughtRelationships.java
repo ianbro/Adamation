@@ -23,8 +23,8 @@ public abstract class TestThoughtRelationships {
 		ShortTermMemory.initialize();
 		TextIdentification.initialize();
 
-		Neuron n = new Neuron(null, EmotionUnit.CONTENT, "run");
-		Neuron ne = new Neuron(null, EmotionUnit.CONTENT, "ing");
+//		Neuron n = new Neuron(null, EmotionUnit.CONTENT, "run");
+//		Neuron ne = new Neuron(null, EmotionUnit.CONTENT, "ing");
 		
 //		Stimulant comStim = new Stimulant("Communication", n2);
 //		Stimulant comStim = Stimulant.deserialize(new File(Constants.STIMULANT_ROOT + "Communication.stim"));

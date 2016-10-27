@@ -1,9 +1,15 @@
 package com.ianmann.mind.patterns.language.text;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
+import javax.swing.JOptionPane;
+
 import com.ianmann.mind.Neuron;
+import com.ianmann.mind.core.navigation.Category;
 import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.input.TextIdentification;
-import com.ianmann.mind.storage.ShortTermMemory;
+import com.ianmann.mind.storage.assimilation.MorphemeNotFound;
 
 /**
  * Processes a specific language and determines the meaning of the
@@ -14,7 +20,7 @@ import com.ianmann.mind.storage.ShortTermMemory;
 public class TextProcessor extends Neuron {
 
 	/**
-	 * Location in memory that this processor will grab input from.
+	 * Location in memory that this processor will insert input to.
 	 */
 	protected int memoryLocation;
 	
@@ -46,7 +52,7 @@ public class TextProcessor extends Neuron {
 	 * @param _label
 	 */
 	public TextProcessor(Neuron _toOutput, EmotionUnit _associated, String _label, Neuron _delimiter, int _memoryLocation) {
-		super(_toOutput, _associated, _label);
+		super(_toOutput, _associated, _label, Category.LANGUAGE);
 		this.delimiter = _delimiter;
 		this.memoryLocation = _memoryLocation;
 	}
@@ -57,25 +63,13 @@ public class TextProcessor extends Neuron {
 	 * @return
 	 */
 	protected String getDelimeter() {
-		if (this.delimiter.getAssociatedMorphemes().length != 1) {
-			return null;
-		} else {
-			String strdelimiter = this.delimiter.getAssociatedMorphemes()[0];
-			
-			//Special characters to escape instead of literals
-			switch(strdelimiter) {
-			default:
-				return strdelimiter;
-			}
+		String strdelimiter = this.delimiter.getAssociatedMorpheme();
+		
+		//Special characters to escape instead of literals
+		switch(strdelimiter) {
+		default:
+			return strdelimiter;
 		}
-	}
-	
-	/**
-	 * Grab the input from short term memory
-	 * @return
-	 */
-	protected String getInput() {
-		return new String(ShortTermMemory.getData(this.memoryLocation));
 	}
 	
 	/**
@@ -83,8 +77,8 @@ public class TextProcessor extends Neuron {
 	 * by the delimiter.
 	 * @return
 	 */
-	protected String[] delimit() {
-		return this.getInput().split(this.getDelimeter());
+	protected String[] delimit(String _input) {
+		return _input.split(this.getDelimeter());
 	}
 	
 	/**
@@ -92,24 +86,18 @@ public class TextProcessor extends Neuron {
 	 * and words.
 	 * @return
 	 */
-	protected String[][] getSentenceDelimited() {
-		String[] delimitedSentence = this.delimit();
-		String[][] fullyDelimited = new String[delimitedSentence.length][];
+	protected String[] getSentenceDelimited(String _input) {
+		String[] delimitedSentence = this.delimit(_input);
 		
-		for (int i = 0; i < delimitedSentence.length; i++) {
-			String word = delimitedSentence[i];
-			
-			fullyDelimited[i] = TextIdentification.splitMorphemes(word);
-		}
-		
-		return fullyDelimited;
+		return delimitedSentence;
 	}
 	
 	/**
 	 * Fire up the thread that will process the sentence and determine it's meaning.
 	 */
-	public void process() {
-		this.processingRunnable = new TextProcessorThread();
+	public void process(String _msg) {
+		String[] messageDelimited = this.getSentenceDelimited(_msg);
+		this.processingRunnable = new TextProcessorThread(messageDelimited);
 		this.processingThread = new Thread(this.processingRunnable);
 		this.processingThread.start();
 	}
@@ -123,11 +111,53 @@ public class TextProcessor extends Neuron {
  *
  */
 class TextProcessorThread implements Runnable {
+	
+	/**
+	 * Message that this text processor will try to interperate.
+	 */
+	private String[] message;
+	
+	public TextProcessorThread(String[] _msg) {
+		this.message = _msg;
+	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		JOptionPane.showMessageDialog(null, Arrays.toString(this.message));
 		
+		
+	}
+	
+	public Neuron getNeuron(String _morpheme) throws MorphemeNotFound {
+		return TextIdentification.getNeuronForMorpheme(_morpheme);
+	}
+	
+}
+
+class StatementIterator implements Iterator<String> {
+	
+	private String[] data;
+	private int currentIndex = 0;
+	
+	public StatementIterator(String[] _statement) {
+		this.data = _statement;
+	}
+
+	@Override
+	public boolean hasNext() {
+		// TODO Auto-generated method stub
+		if (this.data.length > this.currentIndex) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public String next() {
+		// TODO Auto-generated method stub
+		return this.data[this.currentIndex];
 	}
 	
 }

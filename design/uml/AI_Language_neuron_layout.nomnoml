@@ -1,0 +1,39 @@
+[Statement Structure 1|
+e.g. Question
+("What is he doing?")
+("Predicate Subject Verb?")]
+
+[Statement Structure 2|
+e.g. Simple statement
+("The Person ran fast")
+("Article Subject Predicate Adverb")]
+
+[Subject]
+[Predicate]
+[Adverb]
+[Article]
+[Verb]
+
+[Language]->[Statement Structure 1]
+[Language]->[Statement Structure 2]
+
+[Statement Structure 1] -> [Predicate]
+[Statement Structure 1] -> [Subject]
+[Statement Structure 1] -> [Verb]
+[Statement Structure 1] -> [Punctuation]
+
+[Statement Structure 2] -> [Article]
+[Statement Structure 2] -> [Subject]
+[Statement Structure 2] -> [Predicate]
+[Statement Structure 2] -> [Adverb]
+[Statement Structure 2] -> [Punctuation]
+
+[Predicate] -> ["What"]
+[Subject] -> ["he"]
+[Verb] -> ["doing"]
+[Predicate] -> ["Ran"]
+[Subject] -> ["Person"]
+[Article] -> ["The"]
+[Adverb] -> ["Fast"]
+[Punctuation] -> ["?"]
+[Punctuation] -> ["."]

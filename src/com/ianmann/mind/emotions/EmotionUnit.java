@@ -57,5 +57,9 @@ public class EmotionUnit implements Comparable<EmotionUnit>, Serializable{
 	public String toString() {
 		return this.name;
 	}
+	
+	public static EmotionUnit getEmotion(String _emotion) {
+		return null;
+	}
 
 }

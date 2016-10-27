@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -113,7 +114,7 @@ public class TextSensor extends Sensor {
 		
 		try {
 			int header = this.getHeader(new String(_input));
-			String msg = this.getDataFromShortTermMemoryStripped(new String(_input));
+			String msg = this.stripHeader(new String(_input));
 			
 			/*
 			 * Strip off the extra null bytes from msg
@@ -123,8 +124,6 @@ public class TextSensor extends Sensor {
 					msg = msg.substring(0, i-1); //Minus 1 because input also includes the enter for submission
 				}
 			}
-			
-			ShortTermMemory.addData(this.memoryLocation, msg.getBytes());
 			
 			/*
 			 * Block that evaluates the input.
@@ -144,7 +143,7 @@ public class TextSensor extends Sensor {
 	 * Return data but without the header.
 	 * @return
 	 */
-	private String getDataFromShortTermMemoryStripped(String _rawIn) {
+	private String stripHeader(String _rawIn) {
 		if (_rawIn.charAt(0) != '@') {
 			return _rawIn;
 		}
@@ -199,15 +198,8 @@ public class TextSensor extends Sensor {
 	 */
 	private void onTalk(String _input) {
 		TextProcessor english = new TextProcessor(null, EmotionUnit.CONTENT, "processor_english", Neuron.deserialize(new File(Constants.NEURON_ROOT + "49.nrn")), this.memoryLocation);
-//		System.out.println(_input);
-//		System.out.println(Arrays.toString(english.delimit()));
 		
-		String[][] sentence = english.getSentenceDelimited();
-		
-		for (int i = 0; i < sentence.length; i++) {
-			String[] word = sentence[i];
-			System.out.println(Arrays.toString(word));
-		}
+		english.process(_input);
 	}
 
 }

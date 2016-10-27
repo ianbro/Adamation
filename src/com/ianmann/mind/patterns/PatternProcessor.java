@@ -1,6 +1,7 @@
 package com.ianmann.mind.patterns;
 
 import com.ianmann.mind.Neuron;
+import com.ianmann.mind.core.navigation.Category;
 import com.ianmann.mind.emotions.EmotionUnit;
 
 /**
@@ -25,7 +26,7 @@ public class PatternProcessor extends Neuron {
 	 * @param _label
 	 */
 	public PatternProcessor(Neuron _toOutput, EmotionUnit _associated, String _label) {
-		super(_toOutput, _associated, _label);
+		super(_toOutput, _associated, _label, Category.PATTERN);
 		// TODO Auto-generated constructor stub
 	}
 

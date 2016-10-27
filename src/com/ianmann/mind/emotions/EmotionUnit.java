@@ -50,6 +50,10 @@ public class EmotionUnit implements Comparable<EmotionUnit>, Serializable{
 		this.desire = _desire;
 	}
 	
+	public String getName() {
+		return this.name;
+	}
+	
 	public int compareTo(EmotionUnit o) {
 		return this.desire - o.desire;
 	}

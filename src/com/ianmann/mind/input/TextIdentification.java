@@ -61,8 +61,15 @@ public abstract class TextIdentification {
 		if (currentKey.containsKey("stored")) {
 			String neuronPath = Constants.NEURON_ROOT + (String) currentKey.get("stored");
 			File neuronFile = new File(neuronPath);
-			Neuron n = Neuron.deserialize(neuronFile);
-			return n;
+			Neuron n;
+			try {
+				n = Neuron.parse(neuronFile);
+				return n;
+			} catch (FileNotFoundException | ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new MorphemeNotFound(_morpheme);
+			}
 		} else {
 			throw new MorphemeNotFound(_morpheme);
 		}

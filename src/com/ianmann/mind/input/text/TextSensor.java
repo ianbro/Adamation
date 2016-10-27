@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import org.json.simple.parser.ParseException;
+
 import com.ianmann.mind.Neuron;
 import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.emotions.EmotionUnit;
@@ -197,9 +199,14 @@ public class TextSensor extends Sensor {
 	 * @param _input
 	 */
 	private void onTalk(String _input) {
-		TextProcessor english = new TextProcessor(null, EmotionUnit.CONTENT, "processor_english", Neuron.deserialize(new File(Constants.NEURON_ROOT + "49.nrn")), this.memoryLocation);
-		
-		english.process(_input);
+		TextProcessor english = null;
+		try {
+			english = new TextProcessor(null, EmotionUnit.CONTENT, "processor_english", Neuron.parse(new File(Constants.NEURON_ROOT + "49.nrn")), this.memoryLocation);
+			english.process(_input);
+		} catch (FileNotFoundException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

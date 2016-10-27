@@ -14,6 +14,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import org.json.simple.parser.ParseException;
+
 import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.utils.Serializer;
 import com.ianmann.utils.utilities.Files;
@@ -93,7 +95,13 @@ public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
 	 * @return
 	 */
 	private Neuron getNeuronFromFile() {
-		return Neuron.deserialize(this.recieverNeuron);
+		try {
+			return Neuron.parse(this.recieverNeuron);
+		} catch (FileNotFoundException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**

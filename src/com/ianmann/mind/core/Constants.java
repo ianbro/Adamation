@@ -52,9 +52,9 @@ public abstract class Constants {
 		Constants.PATH_TO_LANGUAGE_FOLDER = Constants.CORE_ROOT + "language/";
 	}
 	
-	public static void setConstantCategories() {
-		Category.LANGUAGE = (Category) Category.deserialize(new File(Constants.PATH_TO_CATEGORIES_FOLDER + "language.ctgry"));
-		Category.PATTERN = (Category) Category.deserialize(new File(Constants.PATH_TO_CATEGORIES_FOLDER + "pattern.ctgry"));
+	public static void setConstantCategories() throws FileNotFoundException, ParseException {
+		Category.LANGUAGE = (Category) Category.parse(new File(Constants.PATH_TO_CATEGORIES_FOLDER + "language.ctgry"));
+		Category.PATTERN = (Category) Category.parse(new File(Constants.PATH_TO_CATEGORIES_FOLDER + "pattern.ctgry"));
 	}
 	
 	public static String getLanguageFolderSpecific(Neuron _languageNeuron) {

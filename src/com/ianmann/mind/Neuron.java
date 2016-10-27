@@ -37,7 +37,7 @@ public class Neuron implements Serializable {
 	 * Category that is the parent of this one.
 	 * If null, this is a root category.
 	 */
-	protected Category parentCategory;
+	protected File parentCategory;
 	
 	/**
 	 * References to any neuron that is linked to this neuron.
@@ -101,9 +101,11 @@ public class Neuron implements Serializable {
 	 * @param _label
 	 */
 	protected void initialize(Neuron _linkedThought, EmotionUnit _associated, String _label, Category _category) {
-		this.parentCategory = _category;
 		if (this.parentCategory != null) {
-			this.parentCategory.addNeuralPathway(this);
+			this.parentCategory = _category.location;
+			Neuron c = this.getParentCategory();
+			c.addNeuralPathway(this);
+			c.save();
 		}
 		this.SynapticEndings = new ArrayList<File>();
 		this.addNeuralPathway(_linkedThought);
@@ -129,26 +131,42 @@ public class Neuron implements Serializable {
 	}
 	
 	/**
+	 * Return the parent Category of this neuron.
+	 * @return
+	 */
+	public Category getParentCategory() {
+		try {
+			return Category.parse(this.parentCategory);
+		} catch (FileNotFoundException | ParseException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Set the parent Category of this neuron.
+	 * @param _category
+	 */
+	public void setParentCategory(Category _category) {
+		this.parentCategory = _category.location;
+	}
+	
+	/**
 	 * Moves this neuron to the category represented
 	 * by _category.
 	 * @param _category
 	 */
 	public void associate(Category _category) {
-		if (this.parentCategory != null && !this.parentCategory.equals(_category)) {
+		if (this.parentCategory != null && !this.getParentCategory().equals(_category)) {
 			// Remove this file from this.parentCategory
 			this.location.delete();
+			Neuron c = this.getParentCategory();
+			c.removeNeuralPathway(this);
+			c.save();
 		}
-		this.parentCategory = _category;
+		this.setParentCategory(_category);
 		// Store this neuron in _category
 		this.location = new File(this.getFileLocation());
 		this.save();
-	}
-	
-	/**
-	 * Returns this neuron's category
-	 */
-	public Category getCategory() {
-		return this.parentCategory;
 	}
 	
 	/**
@@ -173,7 +191,7 @@ public class Neuron implements Serializable {
 					return null;
 				}
 			} else {
-				return this.parentCategory.getCategoryPath() + this.associatedMorpheme + ".nrn";
+				return this.getParentCategory().getCategoryPath() + this.associatedMorpheme + ".nrn";
 			}
 		} else {
 			return this.location.getPath();
@@ -197,6 +215,7 @@ public class Neuron implements Serializable {
 		if (_thought != null) {
 			NeuralPathway t = new NeuralPathway(_thought.location);
 			this.SynapticEndings.add(t.location);
+			this.save();
 		}
 	}
 	
@@ -209,6 +228,7 @@ public class Neuron implements Serializable {
 			int indexOfPathway = this.indexOfNeuralPathway(_thought);
 			if (indexOfPathway != -1) {
 				this.SynapticEndings.remove(indexOfPathway);
+				this.save();
 			} else {
 				return;
 			}
@@ -230,7 +250,12 @@ public class Neuron implements Serializable {
 		for (File neuronFile : this.SynapticEndings) {
 			String pathFromNeuronRoot = neuronFile.getAbsolutePath().split(Constants.NEURON_ROOT)[1];
 			if (pathFromNeuronRoot.startsWith(categoryFolder)) {
-				neurons.add(Neuron.deserialize(neuronFile));
+				try {
+					neurons.add(Neuron.parse(neuronFile));
+				} catch (FileNotFoundException | ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		
@@ -242,6 +267,7 @@ public class Neuron implements Serializable {
 	 */
 	protected void destroy() {
 		this.location.delete();
+		this.location = null;
 	}
 	
 	/**
@@ -268,39 +294,27 @@ public class Neuron implements Serializable {
 	}
 	
 	/**
-	 * Reads a file with a serialized {@link Neuron} object in it
-	 * and parses it into an instance of {@link Neuron}
-	 * @param _inputFile
+	 * Parse json data in a file into a Neuron object
+	 * @param _neuronFile
 	 * @return
+	 * @throws FileNotFoundException
+	 * @throws ParseException
 	 */
-	public static Neuron deserialize(File _inputFile) {
-		try {
-			byte[] fileBytes = Files.readFile(_inputFile);
-			Neuron n = Serializer.deserialize(Neuron.class, fileBytes);
-			return n;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-	}
-}
-
-class Parsing {
-	
 	public static Neuron parse(File _neuronFile) throws FileNotFoundException, ParseException {
 		JSONObject jsonNeuron = (JSONObject) Files.json(_neuronFile);
 		
 		Neuron n = new Neuron();
 		
+		n.parentCategory = new File(Constants.STORAGE_ROOT + (String) jsonNeuron.get("parentCategory"));
+		
 		n.SynapticEndings = new ArrayList<File>();
 		JSONArray synaptics = (JSONArray) jsonNeuron.get("synapticEndings");
 		for (Object path : synaptics) {
-			String filePath = (String) path;
+			String filePath = Constants.STORAGE_ROOT + (String) path;
 			n.SynapticEndings.add(new File(filePath));
 		}
 		
-		n.location = new File((String) jsonNeuron.get("location"));
+		n.location = new File(Constants.STORAGE_ROOT + (String) jsonNeuron.get("location"));
 		
 		n.associatedEmotion = EmotionUnit.getEmotion((String) jsonNeuron.get("associatedEmotion"));
 		
@@ -309,4 +323,19 @@ class Parsing {
 		return n;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public JSONObject jsonify() {
+		JSONObject neuronJson = new JSONObject();
+		
+		neuronJson.put("parentCategory", this.parentCategory.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
+		neuronJson.put("synapticEndings", new JSONArray());
+		for (File synapse : this.SynapticEndings) {
+			((JSONArray) neuronJson.get("synapticEndings")).add(synapse.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
+		}
+		neuronJson.put("location", this.location.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
+		neuronJson.put("associatedEmotion", this.associatedEmotion.getName());
+		neuronJson.put("associatedMorpheme", this.associatedMorpheme);
+		
+		return neuronJson;
+	}
 }

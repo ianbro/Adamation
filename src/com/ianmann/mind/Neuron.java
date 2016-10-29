@@ -24,6 +24,7 @@ import com.ianmann.mind.core.navigation.Category;
 import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.utils.Serializer;
 import com.ianmann.utils.utilities.Files;
+import com.ianmann.utils.utilities.JSONUtils;
 
 /**
  * Root class for all thoughts. Every thought object
@@ -283,10 +284,9 @@ public class Neuron implements Serializable {
 				e.printStackTrace();
 			}
 			
-			byte[] serializedThought = Serializer.serialize(this);
-			fos = new FileOutputStream(this.location);
-			fos.write(serializedThought);
-			fos.close();
+			PrintWriter objWriter = new PrintWriter(this.location);
+			objWriter.print(JSONUtils.formatJSON(this.jsonify(), 0));
+			objWriter.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -327,7 +327,10 @@ public class Neuron implements Serializable {
 	public JSONObject jsonify() {
 		JSONObject neuronJson = new JSONObject();
 		
-		neuronJson.put("parentCategory", this.parentCategory.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
+		if (this.parentCategory != null) {
+			neuronJson.put("parentCategory", this.parentCategory.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
+		}
+		
 		neuronJson.put("synapticEndings", new JSONArray());
 		for (File synapse : this.SynapticEndings) {
 			((JSONArray) neuronJson.get("synapticEndings")).add(synapse.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);

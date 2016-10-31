@@ -1,8 +1,0 @@
-{
-	"associatedMorpheme": "pattern",
-	"categoryPath": "mind/storage/neurons/pattern/",
-	"synapticEndings": [
-	],
-	"associatedEmotion": "Content",
-	"location": "core/categories/pattern.ctgry"
-}

@@ -1,0 +1,9 @@
+{
+	"associatedMorpheme": "ford",
+	"synapticEndings": [
+		"pathways/87.tlink"
+	],
+	"parentCategory": "core/categories/vehicle.ctgry",
+	"associatedEmotion": "Glad",
+	"location": "neurons/vehicle/ford.nrn"
+}

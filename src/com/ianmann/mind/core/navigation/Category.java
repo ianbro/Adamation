@@ -44,7 +44,7 @@ public class Category extends Neuron {
 		this.categoryPath = this.getCategoryLocation();
 		if (this.parentCategory != null) {
 			try {
-				this.associate(Category.parse(this.parentCategory));
+				this.assimilate(Category.parse(this.parentCategory));
 			} catch (FileNotFoundException | ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -59,7 +59,7 @@ public class Category extends Neuron {
 		this.categoryPath = this.getCategoryLocation();
 		if (this.parentCategory != null) {
 			try {
-				this.associate(Category.parse(this.parentCategory));
+				this.assimilate(Category.parse(this.parentCategory));
 			} catch (FileNotFoundException | ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -74,7 +74,7 @@ public class Category extends Neuron {
 		this.categoryPath = this.getCategoryLocation();
 		if (this.parentCategory != null) {
 			try {
-				this.associate(Category.parse(this.parentCategory));
+				this.assimilate(Category.parse(this.parentCategory));
 			} catch (FileNotFoundException | ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -89,7 +89,7 @@ public class Category extends Neuron {
 		this.categoryPath = this.getCategoryLocation();
 		if (this.parentCategory != null) {
 			try {
-				this.associate(Category.parse(this.parentCategory));
+				this.assimilate(Category.parse(this.parentCategory));
 			} catch (FileNotFoundException | ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -116,10 +116,10 @@ public class Category extends Neuron {
 	}
 	
 	/**
-	 * Association on categories simply sets the parentCategory for
+	 * Assimilation on categories simply sets the parentCategory for
 	 * this category.
 	 */
-	public void associate(Category _category) {
+	public void assimilate(Category _category) {
 		if (this.parentCategory != null && !this.parentCategory.equals(_category)) {
 			// Remove this file from this.parentCategory
 			Category c = null;
@@ -134,6 +134,7 @@ public class Category extends Neuron {
 			this.removeCategoryFolder();
 		}
 		this.parentCategory = _category.location;
+		this.categoryPath = this.getCategoryLocation();
 		this.save();
 	}
 
@@ -174,7 +175,7 @@ public class Category extends Neuron {
 	 * @Override
 	 * Add the folder that is represented by this category.
 	 */
-	protected void save() {
+	public void save() {
 		super.save();
 		new File(this.categoryPath).mkdirs();
 	}

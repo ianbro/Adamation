@@ -1,0 +1,11 @@
+{
+	"associatedMorpheme": "truck",
+	"categoryPath": "mind/storage/neurons/vehicle/truck/",
+	"synapticEndings": [
+		"pathways/89.tlink",
+		"pathways/94.tlink"
+	],
+	"parentCategory": "core/categories/vehicle.ctgry",
+	"associatedEmotion": "Glad",
+	"location": "core/categories/truck.ctgry"
+}

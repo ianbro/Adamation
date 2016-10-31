@@ -1,8 +1,0 @@
-{
-	"associatedMorpheme": "language",
-	"categoryPath": "mind/storage/neurons/language/",
-	"synapticEndings": [
-	],
-	"associatedEmotion": "Content",
-	"location": "core/categories/language.ctgry"
-}

@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -101,18 +102,14 @@ public class Neuron implements Serializable {
 	 * @param _associated
 	 * @param _label
 	 */
-	protected void initialize(Neuron _linkedThought, EmotionUnit _associated, String _label, Category _category) {
-		if (this.parentCategory != null) {
-			this.parentCategory = _category.location;
-			Neuron c = this.getParentCategory();
-			c.addNeuralPathway(this);
-			c.save();
-		}
+	private void initialize(Neuron _linkedThought, EmotionUnit _associated, String _label, Category _category) {
+		this.setParentCategory(_category);
 		this.SynapticEndings = new ArrayList<File>();
-		this.addNeuralPathway(_linkedThought);
 		
+		this.setAssociatedMorpheme(_label);
 		this.associatedEmotion = _associated;
 		this.location = new File(this.getFileLocation());
+		this.addNeuralPathway(_linkedThought);
 	}
 	
 	/**
@@ -148,7 +145,14 @@ public class Neuron implements Serializable {
 	 * @param _category
 	 */
 	public void setParentCategory(Category _category) {
-		this.parentCategory = _category.location;
+		if (_category == null) {
+			return;
+		} else {
+			this.parentCategory = _category.location;
+			Neuron c = this.getParentCategory();
+			c.addNeuralPathway(this);
+			c.save();
+		}
 	}
 	
 	/**
@@ -156,10 +160,11 @@ public class Neuron implements Serializable {
 	 * by _category.
 	 * @param _category
 	 */
-	public void associate(Category _category) {
+	public void assimilate(Category _category) {
 		if (this.parentCategory != null && !this.getParentCategory().equals(_category)) {
 			// Remove this file from this.parentCategory
 			this.location.delete();
+			this.location = null;
 			Neuron c = this.getParentCategory();
 			c.removeNeuralPathway(this);
 			c.save();
@@ -175,6 +180,15 @@ public class Neuron implements Serializable {
 	 */
 	protected String getFileLocation() {
 		if (this.location == null) {
+			// Get category folder
+			String pathToCategory = "";
+			if (this.parentCategory != null) {
+				pathToCategory = this.getParentCategory().getCategoryPath();
+			} else {
+				// no category so just set pathToCategory to the root neuron folder
+				pathToCategory = Constants.NEURON_ROOT;
+			}
+			
 			if (this.associatedMorpheme == null) {
 				Scanner s;
 				try {
@@ -184,8 +198,7 @@ public class Neuron implements Serializable {
 					PrintWriter p = new PrintWriter(new File(Constants.NEURON_ROOT + "ids"));
 					p.print(next+1);
 					p.close();
-					this.associatedMorpheme = String.valueOf(next);
-					return Constants.NEURON_ROOT + String.valueOf(next) + ".nrn";
+					return pathToCategory + String.valueOf(next) + ".nrn";
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -274,11 +287,13 @@ public class Neuron implements Serializable {
 	/**
 	 * Print this object to the file at {@link Neuron.location}
 	 */
-	protected void save() {
+	public void save() {
 		FileOutputStream fos = null;
 		try {
 			try {
-				java.nio.file.Files.createFile(this.location.toPath());
+				if (!this.location.exists()) {
+					java.nio.file.Files.createFile(this.location.toPath());
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -305,7 +320,12 @@ public class Neuron implements Serializable {
 		
 		Neuron n = new Neuron();
 		
-		n.parentCategory = new File(Constants.STORAGE_ROOT + (String) jsonNeuron.get("parentCategory"));
+		String parentCategoryString = (String) jsonNeuron.get("parentCategory");
+		if (!parentCategoryString.equals("NO_CATEGORY")) {
+			n.parentCategory = new File(Constants.STORAGE_ROOT + (String) jsonNeuron.get("parentCategory"));
+		} else {
+			n.parentCategory = null;
+		}
 		
 		n.SynapticEndings = new ArrayList<File>();
 		JSONArray synaptics = (JSONArray) jsonNeuron.get("synapticEndings");
@@ -329,6 +349,8 @@ public class Neuron implements Serializable {
 		
 		if (this.parentCategory != null) {
 			neuronJson.put("parentCategory", this.parentCategory.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
+		} else {
+			neuronJson.put("parentCategory", "NO_CATEGORY");
 		}
 		
 		neuronJson.put("synapticEndings", new JSONArray());

@@ -63,7 +63,32 @@ public class EmotionUnit implements Comparable<EmotionUnit>, Serializable{
 	}
 	
 	public static EmotionUnit getEmotion(String _emotion) {
-		return null;
+		switch(_emotion) {
+		case "Livid":
+			return LIVID;
+		case "Mad":
+			return MAD;
+		case "Depressed":
+			return DEPRESSED;
+		case "Sad":
+			return SAD;
+		case "Disapointed":
+			return DISAPOINTED;
+		case "Neutral":
+			return NEUTRAL;
+		case "Hopeful":
+			return HOPEFUL;
+		case "Content":
+			return CONTENT;
+		case "Glad":
+			return GLAD;
+		case "Funny":
+			return FUNNY;
+		case "Ecstatic":
+			return ECSTATIC;
+		default:
+			return null;
+		}
 	}
 
 }

@@ -1,0 +1,10 @@
+{
+	"associatedMorpheme": "dog",
+	"categoryPath": "mind/storage/neurons/dog/",
+	"synapticEndings": [
+		"pathways/91.tlink"
+	],
+	"parentCategory": "NO_CATEGORY",
+	"associatedEmotion": "Content",
+	"location": "core/categories/dog.ctgry"
+}

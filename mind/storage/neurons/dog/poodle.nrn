@@ -1,0 +1,8 @@
+{
+	"associatedMorpheme": "poodle",
+	"synapticEndings": [
+	],
+	"parentCategory": "core/categories/dog.ctgry",
+	"associatedEmotion": "Content",
+	"location": "neurons/dog/poodle.nrn"
+}

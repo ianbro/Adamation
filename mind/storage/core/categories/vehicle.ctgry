@@ -1,0 +1,12 @@
+{
+	"associatedMorpheme": "vehicle",
+	"categoryPath": "mind/storage/neurons/vehicle/",
+	"synapticEndings": [
+		"pathways/82.tlink",
+		"pathways/83.tlink",
+		"pathways/84.tlink"
+	],
+	"parentCategory": "NO_CATEGORY",
+	"associatedEmotion": "Ecstatic",
+	"location": "core/categories/vehicle.ctgry"
+}

@@ -120,6 +120,7 @@ public class Category extends Neuron {
 	 * this category.
 	 */
 	public void assimilate(Category _category) {
+		// If this neuron has a parent category already and it's not the same as _category
 		if (this.parentCategory != null && !this.parentCategory.equals(_category)) {
 			// Remove this file from this.parentCategory
 			Category c = null;
@@ -129,10 +130,11 @@ public class Category extends Neuron {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			c.removeNeuralPathway(_category);
+			c.removeNeuralPathway(this);
 			c.save();
 			this.removeCategoryFolder();
 		}
+		// Set the new parent category
 		this.parentCategory = _category.location;
 		this.categoryPath = this.getCategoryLocation();
 		this.save();
@@ -166,6 +168,9 @@ public class Category extends Neuron {
 		this.removeCategoryFolder();
 	}
 	
+	/**
+	 * Delete the folder that this category stores it's neurons in.
+	 */
 	protected void removeCategoryFolder() {
 		new File(this.categoryPath).delete();
 		this.categoryPath = null;

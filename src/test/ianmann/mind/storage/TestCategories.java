@@ -19,6 +19,13 @@ public class TestCategories {
 		ShortTermMemory.initialize();
 		TextIdentification.initialize();
 		
+		Category noun = new Category(EmotionUnit.CONTENT, "entity");
+		noun.save();
+		Category definition = new Category(EmotionUnit.CONTENT, "definition", noun);
+		definition.save();
+	}
+	
+	public static void testExampleTruckDog() {
 		Category dog = new Category(EmotionUnit.CONTENT, "dog");
 		dog.save();
 

@@ -129,7 +129,7 @@ public class Neuron implements Serializable {
 	}
 	
 	/**
-	 * Return the parent Category of this neuron.
+	 * Return the parent Category of this neuron from it's file.
 	 * @return
 	 */
 	public Category getParentCategory() {
@@ -157,14 +157,17 @@ public class Neuron implements Serializable {
 	
 	/**
 	 * Moves this neuron to the category represented
-	 * by _category.
+	 * by _category. This method also saves _category
+	 * if it's not null or the same category as it use
+	 * to be assimilated with. It also saves this neuron.
 	 * @param _category
 	 */
 	public void assimilate(Category _category) {
+		// If this neuron has a parent category already and it's not the same as _category
 		if (this.parentCategory != null && !this.getParentCategory().equals(_category)) {
-			// Remove this file from this.parentCategory
+			// Remove this file from this.parentCategory's folder.
 			this.location.delete();
-			this.location = null;
+			this.location = null; // Set it null so that getFileLocation() will do logic to get the new path.
 			Neuron c = this.getParentCategory();
 			c.removeNeuralPathway(this);
 			c.save();
@@ -176,7 +179,11 @@ public class Neuron implements Serializable {
 	}
 	
 	/**
-	 * Retrieve the location to the file containing this Neuron
+	 * Retrieve the location to the file containing this Neuron.
+	 * <br><br>
+	 * This method does the logic for deciding what to name the file.
+	 * If no associated morpheme is found for this neuron, it will
+	 * use an id from neuron ids file.
 	 */
 	protected String getFileLocation() {
 		if (this.location == null) {
@@ -190,6 +197,11 @@ public class Neuron implements Serializable {
 			}
 			
 			if (this.associatedMorpheme == null) {
+				/*
+				 * If no morpheme is found for this neuron,
+				 * grab the id out of id file and use that for
+				 * the file name. Then increment the next id.
+				 */
 				Scanner s;
 				try {
 					s = new Scanner(new File(Constants.NEURON_ROOT + "ids"));
@@ -205,13 +217,26 @@ public class Neuron implements Serializable {
 					return null;
 				}
 			} else {
-				return this.getParentCategory().getCategoryPath() + this.associatedMorpheme + ".nrn";
+				/*
+				 * A morpheme is saved for this neuron so just use
+				 * that as the file name.
+				 */
+				return pathToCategory + this.associatedMorpheme + ".nrn";
 			}
 		} else {
+			/*
+			 * The location is already stored so just return it.
+			 */
 			return this.location.getPath();
 		}
 	}
 	
+	/**
+	 * Return the index at which _neuron is stored in
+	 * {@code this.SynapticEndings}.
+	 * @param _neuron
+	 * @return
+	 */
 	private int indexOfNeuralPathway(Neuron _neuron) {
 		for (int i = 0; i < this.SynapticEndings.size(); i++) {
 			if (this.SynapticEndings.get(i).equals(_neuron)) {
@@ -285,7 +310,10 @@ public class Neuron implements Serializable {
 	}
 	
 	/**
-	 * Print this object to the file at {@link Neuron.location}
+	 * Print this object to the file at {@link Neuron.location}.
+	 * <br><br>
+	 * If the neuron file already exists, just rewrite the data
+	 * in the file, overwriting the old data with the new data.
 	 */
 	public void save() {
 		FileOutputStream fos = null;
@@ -343,6 +371,10 @@ public class Neuron implements Serializable {
 		return n;
 	}
 	
+	/**
+	 * Return the neuron object as a json object.
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public JSONObject jsonify() {
 		JSONObject neuronJson = new JSONObject();

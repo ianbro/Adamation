@@ -1,5 +1,6 @@
 package test.ianmann.mind.storage;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.json.simple.parser.ParseException;
@@ -19,10 +20,14 @@ public class TestCategories {
 		ShortTermMemory.initialize();
 		TextIdentification.initialize();
 		
-		Category noun = new Category(EmotionUnit.CONTENT, "entity");
-		noun.save();
-		Category definition = new Category(EmotionUnit.CONTENT, "definition", noun);
-		definition.save();
+		Category cat = Category.parse(new File("mind/storage/core/categories/dog.ctgry"));
+		Category color = new Category(EmotionUnit.CONTENT, "color");
+		color.save();
+		Category action = new Category(EmotionUnit.CONTENT, "color");
+		action.save();
+		
+		Neuron red = new Neuron(null, EmotionUnit.CONTENT, "red", color);
+		red.save();
 	}
 	
 	public static void testExampleTruckDog() {

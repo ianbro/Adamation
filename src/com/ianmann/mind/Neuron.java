@@ -366,7 +366,11 @@ public class Neuron implements Serializable {
 		
 		n.associatedEmotion = EmotionUnit.getEmotion((String) jsonNeuron.get("associatedEmotion"));
 		
-		n.associatedMorpheme = (String) jsonNeuron.get("associatedMorpheme");
+		if (!(jsonNeuron.get("associatedMorpheme") instanceof Long)) {
+			n.associatedMorpheme = (String) jsonNeuron.get("associatedMorpheme");
+		} else {
+			n.associatedEmotion = null;
+		}
 		
 		return n;
 	}
@@ -391,7 +395,11 @@ public class Neuron implements Serializable {
 		}
 		neuronJson.put("location", this.location.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
 		neuronJson.put("associatedEmotion", this.associatedEmotion.getName());
-		neuronJson.put("associatedMorpheme", this.associatedMorpheme);
+		if (this.associatedMorpheme != null) {
+			neuronJson.put("associatedMorpheme", this.associatedMorpheme);
+		} else {
+			neuronJson.put("associatedMorpheme", 1);
+		}
 		
 		return neuronJson;
 	}

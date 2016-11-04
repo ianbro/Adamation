@@ -336,6 +336,10 @@ public class Neuron implements Serializable {
 		}
 	}
 	
+	public boolean equals(Neuron o) {
+		return this.location.equals(o.location);
+	}
+	
 	/**
 	 * Parse json data in a file into a Neuron object
 	 * @param _neuronFile

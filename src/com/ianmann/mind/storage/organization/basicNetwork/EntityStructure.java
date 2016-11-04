@@ -43,4 +43,50 @@ public class EntityStructure extends Neuron {
 	public EntityStructure() {
 		super();
 	}
+	
+	public ArrayList<Neuron> getAttributes() {
+		ArrayList<Neuron> neurons = new ArrayList<Neuron>();
+		
+		for (File nFile : this.attributes) {
+			try {
+				neurons.add(Neuron.parse(nFile));
+			} catch (FileNotFoundException | ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return neurons;
+	}
+	
+	public void addAttribute(Neuron _n) {
+		this.attributes.add(_n.location);
+	}
+	
+	public void addAttribute(File _n) {
+		this.attributes.add(_n);
+	}
+	
+	public ArrayList<ActionStructure> getActions() {
+		ArrayList<ActionStructure> neurons = new ArrayList<ActionStructure>();
+		
+		for (File nFIle : this.actions) {
+			try {
+				neurons.add((ActionStructure) Neuron.parse(nFIle));
+			} catch (FileNotFoundException | ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return neurons;
+	}
+	
+	public void addAction(ActionStructure _n) {
+		this.actions.add(_n.location);
+	}
+	
+	public void addAction(File _n) {
+		this.actions.add(_n);
+	}
 }

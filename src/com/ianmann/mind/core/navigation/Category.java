@@ -15,7 +15,7 @@ import com.ianmann.utils.utilities.Files;
 
 public class Category extends Neuron {
 	
-	/*
+	/**
 	 * These categories always exist. They are
 	 * part of the basic functionality of the AI.
 	 */
@@ -224,5 +224,4 @@ public class Category extends Neuron {
 		
 		return neuronJson;
 	}
-
 }

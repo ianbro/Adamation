@@ -1,13 +1,57 @@
-*.class
+# Prerequisites
+*.d
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
 
-# Package Files #
-*.jar
-*.war
-*.ear
+# Linker output
+*.ilk
+*.map
+*.exp
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-/target/
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+## Adamation specific
+
+# Memory
+mind/storage/neurons/*
+mind/storage/pathways/*

@@ -12,21 +12,25 @@ CC	= gcc
 # Standard rule name for project. Builds production binaries
 PROG	= Adamation
 
-# Path to project within bin or src folder
+SRC 		= src/
+BIN			= bin/
+
+# Path to project within src folder
 PP			= com/ianmann/Adamation/
+TESTS		= $(PP)tests/
 
 # Source files for adamation
-CEESRCS = $(PP)adamation_main.c
+CEESRCS = $(SRC)$(TESTS)adamation_main.c
 
 # Output files for adamation
-OBJS    = $(PP)adamation_main.o
+OBJS    = $(BIN)$(TESTS)/tests/adamation_main.o
 
 # Builds entire project for production
 $(PROG): $(OBJS)
 	$(CC) $(OBJS) -o $(PROG)
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $<
+$(BIN)$(PP)%.o: $(SRC)$(PP)%.c
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
 	rm -f *.o *~ $(MRULE)

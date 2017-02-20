@@ -19,18 +19,25 @@ BIN			= bin/
 PP			= com/ianmann/Adamation/
 TESTS		= $(PP)tests/
 
-# Source files for adamation
-CEESRCS = $(SRC)$(TESTS)adamation_main.c
-
 # Output files for adamation
-OBJS    = $(BIN)$(TESTS)/tests/adamation_main.o
+OBJS    = $(BIN)$(PP)memory/files.o
+
+MAIN = $(BIN)$(PP)main/adamation_main.o
+
+TEST_FSTORE = $(BIN)$(TESTS)test_file_storage.o
 
 # Builds entire project for production
-$(PROG): $(OBJS)
-	$(CC) $(OBJS) -o $(PROG)
+$(PROG): $(OBJS) $(MAIN)
+	$(CC) $(CFLAGS) $(OBJS) $(MAIN) -o $(PROG).o
+	
+$(BIN)$(TESTS)%.o: $(OBJS) $(SRC)$(TESTS)%.c
+	$(CC) $(CFLAGS) $^ -o $@
 
 $(BIN)$(PP)%.o: $(SRC)$(PP)%.c
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 clean:
-	rm -f *.o *~ $(MRULE)
+	rm -f *.o *~
+	cp -rf src/ bin/
+	find bin -name "*.c" -type f -delete
+	find bin -name "*.o" -type f -delete

@@ -195,7 +195,7 @@ public class TextSensor extends Sensor {
 	}
 	
 	/**
-	 * Action to be called in the event of someone talking to Adamation.
+	 * ActionInstance to be called in the event of someone talking to Adamation.
 	 * @param _input
 	 */
 	private void onTalk(String _input) {

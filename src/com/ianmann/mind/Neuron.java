@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
+<<<<<<< Updated upstream
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -22,6 +23,17 @@ import org.json.simple.parser.ParseException;
 
 import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.core.navigation.Category;
+=======
+import com.ianmann.database.fields.CharField;
+import com.ianmann.database.fields.ForeignKey;
+import com.ianmann.database.fields.IntegerField;
+import com.ianmann.database.fields.ManyToManyField;
+import com.ianmann.database.orm.Model;
+import com.ianmann.database.orm.QuerySet;
+import com.ianmann.database.orm.queries.scripts.WhereCondition;
+import com.ianmann.database.utils.exceptions.ObjectAlreadyExistsException;
+import com.ianmann.database.utils.exceptions.ObjectNotFoundException;
+>>>>>>> Stashed changes
 import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.utils.Serializer;
 import com.ianmann.utils.utilities.Files;
@@ -69,11 +81,27 @@ public class Neuron implements Serializable {
 	protected String associatedMorpheme;
 	
 	/**
+<<<<<<< Updated upstream
 	 * Used for parsing json into a neuron object.
 	 */
 	protected Neuron() {
 		
 	}
+=======
+	 * Denotes what type of neuron this is. The possible values are in the class NeuronType.
+	 */
+	public IntegerField type = new IntegerField("type", false, NeuronType.DESCRIPTION, false, 100);
+
+	/**
+	 * The neurons that represent synaptic connections to this neuron's parent neuron.
+	 */
+	public ManyToManyField<Neuron, NeuralPathway> parent_neurons = new ManyToManyField<Neuron, NeuralPathway>("parent_neurons", Neuron.class, NeuralPathway.class);
+	
+	/**
+	 * The neurons that represent synaptic connections to this neuron.
+	 */
+	public ManyToManyField<Neuron, NeuralPathway> synaptic_connections = new ManyToManyField<Neuron, NeuralPathway>("synaptic_connections", Neuron.class, NeuralPathway.class);
+>>>>>>> Stashed changes
 	
 	/**
 	 * Create Neuron with an existing neuron linked to it.

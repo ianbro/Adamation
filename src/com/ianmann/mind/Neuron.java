@@ -25,6 +25,7 @@ import com.ianmann.mind.core.navigation.Category;
 import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.storage.organization.NeuronType;
 import com.ianmann.mind.storage.organization.basicNetwork.AttributeStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.Description;
 import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
 import com.ianmann.mind.storage.organization.basicNetwork.NeuralNetwork;
 import com.ianmann.mind.utils.Serializer;
@@ -383,6 +384,8 @@ public class Neuron implements Serializable {
 			return new EntityStructure(this);
 		} else if (this.getType() == NeuronType.ATTRIBUTE) {
 			return new AttributeStructure(this);
+		} else if (this.getType() == NeuronType.DESCRIPTION) {
+			return new Description(this);
 		} else {
 			return null;
 		}
@@ -457,7 +460,7 @@ public class Neuron implements Serializable {
 		
 		n.associatedEmotion = EmotionUnit.getEmotion((String) jsonNeuron.get("associatedEmotion"));
 		
-		n.type = (int) jsonNeuron.get("type");
+		n.type = (int) ((long) jsonNeuron.get("type"));
 		
 		if (!(jsonNeuron.get("associatedMorpheme") instanceof Long)) {
 			n.associatedMorpheme = (String) jsonNeuron.get("associatedMorpheme");

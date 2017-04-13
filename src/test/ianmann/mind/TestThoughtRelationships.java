@@ -16,6 +16,7 @@ import com.ianmann.mind.storage.ShortTermMemory;
 import com.ianmann.mind.storage.assimilation.Assimilation;
 import com.ianmann.mind.storage.assimilation.MorphemeNotFound;
 import com.ianmann.mind.storage.organization.basicNetwork.AttributeStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.Description;
 import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
 
 public abstract class TestThoughtRelationships {
@@ -33,6 +34,8 @@ public abstract class TestThoughtRelationships {
 		EntityStructure person = EntityStructure.create(null, being, "Person");
 		person.addAttribute(person.asNeuron());
 		person.addAttribute(name.asNeuron());
+		
+		Description ian = name.createDescription("ian");
 	}
 
 }

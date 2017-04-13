@@ -1,0 +1,11 @@
+{
+	"associatedMorpheme": "ian",
+	"synapticEndings": [
+		"pathways/18.tlink",
+		"pathways/20.tlink"
+	],
+	"parentCategory": "core/categories/label.ctgry",
+	"associatedEmotion": "Neutral",
+	"location": "neurons/label/ian.nrn",
+	"type": 4
+}

@@ -1,0 +1,10 @@
+{
+	"associatedMorpheme": "Name",
+	"synapticEndings": [
+		"pathways/19.tlink"
+	],
+	"parentCategory": "core/categories/label.ctgry",
+	"associatedEmotion": "Neutral",
+	"location": "neurons/label/Name.nrn",
+	"type": 0
+}

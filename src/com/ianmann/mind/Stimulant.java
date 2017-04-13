@@ -36,7 +36,7 @@ public class Stimulant implements Serializable {
 	public File location;
 	
 	public Stimulant(String _identifyer, Neuron _reactionNeuron) {
-		this.reaction = new NeuralPathway(_reactionNeuron.location).location;
+//		this.reaction = new NeuralPathway(_reactionNeuron.location).location;
 		
 		this.location = new File(Constants.STIMULANT_ROOT + _identifyer + ".stim");
 		

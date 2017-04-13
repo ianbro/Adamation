@@ -52,6 +52,26 @@ public class AttributeStructure extends NeuralNetwork {
 		}
 		return (AttributeStructure) neuron.parsed();
 	}
+	
+	public Description createDescription(Category _category, String _label) {
+		Description newDescription = Description.create(this, _category, _label);
+		return newDescription;
+	}
+	
+	public Description createDescription(Category _category) {
+		Description newDescription = Description.create(this, _category);
+		return newDescription;
+	}
+	
+	public Description createDescription(String _label) {
+		Description newDescription = Description.create(this, this.root.getParentCategory(), _label);
+		return newDescription;
+	}
+	
+	public Description createDescription() {
+		Description newDescription = Description.create(this, this.root.getParentCategory());
+		return newDescription;
+	}
 
 	/**
 	 * @Override
@@ -104,6 +124,7 @@ public class AttributeStructure extends NeuralNetwork {
 		if (_n.getType() == NeuronType.DESCRIPTION) {
 			NeuralPathway synapse = this.root.addNeuralPathway(_n);
 			this.possibilities.add(synapse.location);
+			_n.addNeuralPathway(this.root);
 		}
 	}
 	

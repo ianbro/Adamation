@@ -38,7 +38,7 @@ public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
 	 * The amount of size that {@code NeuralPathway.connectionSize}
 	 * goes up or down by.
 	 */
-	private final double INCREMENTATION_STEP = 0.00001;
+	private static final double INCREMENTATION_STEP = 0.00001;
 
 	/**
 	 * This will be returned when the AI processor accesses this
@@ -125,10 +125,13 @@ public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
 	
 	/**
 	 * Activate this link and retrieve the thought
-	 * that is linked by this.
+	 * that is linked by this. This also increments
+	 * the size of the synaptic path.
 	 * @return
 	 */
 	public Neuron fireSynapse() {
+		this.connectionSize += NeuralPathway.INCREMENTATION_STEP;
+		this.save();
 		return this.getNeuronFromFile();
 	}
 	

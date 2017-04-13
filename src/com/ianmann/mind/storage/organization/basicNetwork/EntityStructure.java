@@ -23,7 +23,7 @@ public class EntityStructure extends NeuralNetwork {
 	 * <br><br>
 	 * Each file contains a thought link to a neuron
 	 */
-	private ArrayList<File> attributes = new ArrayList<File>();
+	protected ArrayList<File> attributes = new ArrayList<File>();
 	
 	/**
 	 * Instantiate an Entity Structure network. This contains multiple attributes and acts
@@ -107,6 +107,17 @@ public class EntityStructure extends NeuralNetwork {
 	 */
 	public ArrayList<Neuron> getAttributes() {
 		ArrayList<Neuron> neurons = new ArrayList<Neuron>();
+		
+		if (this.root.getParentNeuron() != null) {
+			for (File neuronFile : ((EntityStructure) this.root.getParentNeuron().parsed()).attributes) {
+				try {
+					neurons.add(Neuron.fromJSON(neuronFile));
+				} catch (FileNotFoundException | ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		
 		for (File nFile : this.attributes) {
 			try {

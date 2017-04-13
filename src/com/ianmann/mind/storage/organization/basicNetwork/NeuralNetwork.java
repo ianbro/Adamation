@@ -1,6 +1,7 @@
 package com.ianmann.mind.storage.organization.basicNetwork;
 
 import com.ianmann.mind.Neuron;
+import com.ianmann.mind.core.navigation.Category;
 
 public abstract class NeuralNetwork {
 	

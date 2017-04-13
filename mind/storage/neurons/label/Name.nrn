@@ -1,8 +1,0 @@
-{
-	"associatedMorpheme": "Name",
-	"synapticEndings": [
-	],
-	"parentCategory": "core/categories/label.ctgry",
-	"associatedEmotion": "Neutral",
-	"location": "neurons/label/Name.nrn"
-}

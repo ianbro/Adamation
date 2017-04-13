@@ -15,6 +15,7 @@ import com.ianmann.mind.input.TextIdentification;
 import com.ianmann.mind.storage.ShortTermMemory;
 import com.ianmann.mind.storage.assimilation.Assimilation;
 import com.ianmann.mind.storage.assimilation.MorphemeNotFound;
+import com.ianmann.mind.storage.organization.basicNetwork.AttributeStructure;
 import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
 
 public abstract class TestThoughtRelationships {
@@ -28,8 +29,9 @@ public abstract class TestThoughtRelationships {
 		Category c = new Category("label", null);
 		Category being = new Category("being", null);
 		
-		EntityStructure name = EntityStructure.create(null, c, "Name");
+		AttributeStructure name = AttributeStructure.create(null, c, "Name");
 		EntityStructure person = EntityStructure.create(null, being, "Person");
+		person.addAttribute(person.asNeuron());
 		person.addAttribute(name.asNeuron());
 	}
 

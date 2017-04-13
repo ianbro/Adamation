@@ -24,6 +24,7 @@ import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.core.navigation.Category;
 import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.storage.organization.NeuronType;
+import com.ianmann.mind.storage.organization.basicNetwork.AttributeStructure;
 import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
 import com.ianmann.mind.storage.organization.basicNetwork.NeuralNetwork;
 import com.ianmann.mind.utils.Serializer;
@@ -171,6 +172,12 @@ public class Neuron implements Serializable {
 		return this.type;
 	}
 	
+	/**
+	 * Returns all synaptic endings related to this neuron. Each file in
+	 * this list contains a NeuralPathway object. Use fireSynapse() on
+	 * the objects to get the actual Neuron object.
+	 * @return
+	 */
 	public ArrayList<File> getSynapticEndings() {
 		return this.synapticEndings;
 	}
@@ -313,11 +320,14 @@ public class Neuron implements Serializable {
 	 * Make new pathway to a thought.
 	 * @param _thought
 	 */
-	public void addNeuralPathway(Neuron _thought) {
+	public NeuralPathway addNeuralPathway(Neuron _thought) {
 		if (_thought != null) {
 			NeuralPathway t = new NeuralPathway(_thought.location);
 			this.synapticEndings.add(t.location);
 			this.save();
+			return t;
+		} else {
+			return null;
 		}
 	}
 	
@@ -371,6 +381,8 @@ public class Neuron implements Serializable {
 	public NeuralNetwork parsed() {
 		if (this.getType() == NeuronType.NOUN_DEFINITION) {
 			return new EntityStructure(this);
+		} else if (this.getType() == NeuronType.ATTRIBUTE) {
+			return new AttributeStructure(this);
 		} else {
 			return null;
 		}
@@ -445,6 +457,8 @@ public class Neuron implements Serializable {
 		
 		n.associatedEmotion = EmotionUnit.getEmotion((String) jsonNeuron.get("associatedEmotion"));
 		
+		n.type = (int) jsonNeuron.get("type");
+		
 		if (!(jsonNeuron.get("associatedMorpheme") instanceof Long)) {
 			n.associatedMorpheme = (String) jsonNeuron.get("associatedMorpheme");
 		} else {
@@ -474,6 +488,7 @@ public class Neuron implements Serializable {
 		}
 		neuronJson.put("location", this.location.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
 		neuronJson.put("associatedEmotion", this.associatedEmotion.getName());
+		neuronJson.put("type", this.type);
 		if (this.associatedMorpheme != null) {
 			neuronJson.put("associatedMorpheme", this.associatedMorpheme);
 		} else {

@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Scanner;
 
 import org.json.simple.parser.ParseException;
@@ -50,6 +51,24 @@ public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
 	 * File in which this object is stored.
 	 */
 	public File location;
+	
+	/**
+	 * Comparator object for comparing two NeuralPathway objects. This allows arrays of NeuralPathway
+	 * objects to be sorted.
+	 */
+	public static Comparator<NeuralPathway> neuralPathwayComparator = new Comparator<NeuralPathway>() {
+
+		@Override
+		public int compare(NeuralPathway o1, NeuralPathway o2) {
+			if (o1.connectionSize > o2.connectionSize) {
+				return 1;
+			} else if (o1.connectionSize < o2.connectionSize) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+	};
 	
 	public NeuralPathway(File _resultThoughtFile) {
 		this.recieverNeuron = _resultThoughtFile;

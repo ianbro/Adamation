@@ -121,12 +121,30 @@ public class EntityStructure extends NeuralNetwork {
 	}
 	
 	/**
+	 * Return the related neuron as a parsed neuron object at index in this networks
+	 * list of attributes.
+	 * @param index
+	 * @return
+	 */
+	public Neuron getAttribute(int index) {
+		try {
+			return Neuron.fromJSON(this.attributes.get(index));
+		} catch (FileNotFoundException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
 	 * Adds the neuron _n to the network of attributes that this network is consisted of.
 	 * @param _n
 	 */
 	public void addAttribute(Neuron _n) {
-		this.attributes.add(_n.location);
-		this.root.addNeuralPathway(_n);
+		if (_n.getType() == NeuronType.NOUN_DEFINITION || _n.getType() == NeuronType.ATTRIBUTE) {
+			NeuralPathway synapse = this.root.addNeuralPathway(_n);
+			this.attributes.add(synapse.location);
+		}
 	}
 	
 	/**

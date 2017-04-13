@@ -23,6 +23,9 @@ import org.json.simple.parser.ParseException;
 import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.core.navigation.Category;
 import com.ianmann.mind.emotions.EmotionUnit;
+import com.ianmann.mind.storage.organization.NeuronType;
+import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.NeuralNetwork;
 import com.ianmann.mind.utils.Serializer;
 import com.ianmann.utils.utilities.Files;
 import com.ianmann.utils.utilities.JSONUtils;
@@ -34,6 +37,13 @@ import com.ianmann.utils.utilities.JSONUtils;
  *
  */
 public class Neuron implements Serializable {
+	
+	/**
+	 * Denotes the structural layout of the network of neurons
+	 * connected to this neuron. Examples of this may be noun
+	 * structures or noun instances.
+	 */
+	protected int type;
 
 	/**
 	 * Category that is the parent of this one.
@@ -42,12 +52,19 @@ public class Neuron implements Serializable {
 	protected File parentCategory;
 	
 	/**
+	 * Reference to a neuron that is the parent neuron
+	 * to this. For example, if this current neuron is
+	 * a poodle, this might be a dog.
+	 */
+	protected File parentNeuron;
+	
+	/**
 	 * References to any neuron that is linked to this neuron.
 	 * The AI will use this list to link through the thoughts.
 	 * The file it points to contains one {@code NeuralPathway} object
 	 * and can be thought of as a synaptic connection.
 	 */
-	protected ArrayList<File> SynapticEndings;
+	protected ArrayList<File> synapticEndings;
 	
 	/**
 	 * File in which this object is stored.
@@ -80,8 +97,8 @@ public class Neuron implements Serializable {
 	 * @param _linkedThought
 	 * @param _associated
 	 */
-	public Neuron(Neuron _linkedThought, EmotionUnit _associated, Category _category) {
-		this.initialize(_linkedThought, _associated, null, _category);
+	public Neuron(int _type, EmotionUnit _associated, Category _category) {
+		this.initialize(_type, _associated, null, _category);
 	}
 	
 	/**
@@ -91,9 +108,9 @@ public class Neuron implements Serializable {
 	 * @param _linkedThought
 	 * @param _associated
 	 */
-	public Neuron(Neuron _linkedThought, EmotionUnit _associated, String _label, Category _category) {
+	public Neuron(int _type, EmotionUnit _associated, String _label, Category _category) {
 		this.associatedMorpheme = _label;
-		this.initialize(_linkedThought, _associated, _label, _category);
+		this.initialize(_type, _associated, _label, _category);
 	}
 	
 	/**
@@ -102,14 +119,60 @@ public class Neuron implements Serializable {
 	 * @param _associated
 	 * @param _label
 	 */
-	private void initialize(Neuron _linkedThought, EmotionUnit _associated, String _label, Category _category) {
+	private void initialize(int _type, EmotionUnit _associated, String _label, Category _category) {
+		this.type = _type;
+		
 		this.setParentCategory(_category);
-		this.SynapticEndings = new ArrayList<File>();
+		this.synapticEndings = new ArrayList<File>();
 		
 		this.setAssociatedMorpheme(_label);
 		this.associatedEmotion = _associated;
 		this.location = new File(this.getFileLocation());
-		this.addNeuralPathway(_linkedThought);
+	}
+	
+	/**
+	 * Sets the parent neuron for this neuron. _neuron's type must be the same
+	 * as this neurons type.
+	 * @param _neuron
+	 */
+	public void setParentNeuron(Neuron _neuron) {
+		if (_neuron.getType() != this.getType()) {
+			// TODO: throw exception because you can't set this neurons
+			// parent to a neuron of a different type.
+			return;
+		} else {
+			if (this.parentNeuron != null) {
+				if (this.parentNeuron.delete()) {
+					NeuralPathway t = new NeuralPathway(_neuron.location);
+					this.parentNeuron = t.location;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Returns the Neuron that represents the parent neuron for this neuron.
+	 * @return
+	 */
+	public Neuron getParentNeuron() {
+		if (this.parentNeuron != null) {
+			return NeuralPathway.deserialize(this.parentNeuron).fireSynapse();
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Returns the integer denoting the type of neuron that this neuron is in relation
+	 * to neural network structure.
+	 * @return
+	 */
+	public int getType() {
+		return this.type;
+	}
+	
+	public ArrayList<File> getSynapticEndings() {
+		return this.synapticEndings;
 	}
 	
 	/**
@@ -238,8 +301,8 @@ public class Neuron implements Serializable {
 	 * @return
 	 */
 	private int indexOfNeuralPathway(Neuron _neuron) {
-		for (int i = 0; i < this.SynapticEndings.size(); i++) {
-			if (this.SynapticEndings.get(i).equals(_neuron)) {
+		for (int i = 0; i < this.synapticEndings.size(); i++) {
+			if (this.synapticEndings.get(i).equals(_neuron)) {
 				return i;
 			}
 		}
@@ -253,7 +316,7 @@ public class Neuron implements Serializable {
 	public void addNeuralPathway(Neuron _thought) {
 		if (_thought != null) {
 			NeuralPathway t = new NeuralPathway(_thought.location);
-			this.SynapticEndings.add(t.location);
+			this.synapticEndings.add(t.location);
 			this.save();
 		}
 	}
@@ -266,8 +329,11 @@ public class Neuron implements Serializable {
 		if (_thought != null) {
 			int indexOfPathway = this.indexOfNeuralPathway(_thought);
 			if (indexOfPathway != -1) {
-				this.SynapticEndings.remove(indexOfPathway);
-				this.save();
+				NeuralPathway pathway = NeuralPathway.deserialize(this.synapticEndings.get(indexOfPathway));
+				if (pathway.location.delete()) {
+					this.synapticEndings.remove(indexOfPathway);
+					this.save();
+				}
 			} else {
 				return;
 			}
@@ -282,15 +348,16 @@ public class Neuron implements Serializable {
 	 * @param _category - Neuron with path to folder that contains the
 	 * Neurons desired. returns neurons in subfolders of _category as well.
 	 */
+	@Deprecated
 	public ArrayList<Neuron> getRelatedNeuronsInCategory(Category _category) {
 		String categoryFolder = _category.getCategoryPath();
 		ArrayList<Neuron> neurons = new ArrayList<Neuron>();
 		
-		for (File neuronFile : this.SynapticEndings) {
+		for (File neuronFile : this.synapticEndings) {
 			String pathFromNeuronRoot = neuronFile.getAbsolutePath().split(Constants.NEURON_ROOT)[1];
 			if (pathFromNeuronRoot.startsWith(categoryFolder)) {
 				try {
-					neurons.add(Neuron.parse(neuronFile));
+					neurons.add(Neuron.fromJSON(neuronFile));
 				} catch (FileNotFoundException | ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -299,6 +366,14 @@ public class Neuron implements Serializable {
 		}
 		
 		return neurons;
+	}
+	
+	public NeuralNetwork parsed() {
+		if (this.getType() == NeuronType.NOUN_DEFINITION) {
+			return new EntityStructure(this);
+		} else {
+			return null;
+		}
 	}
 	
 	/**
@@ -347,7 +422,7 @@ public class Neuron implements Serializable {
 	 * @throws FileNotFoundException
 	 * @throws ParseException
 	 */
-	public static Neuron parse(File _neuronFile) throws FileNotFoundException, ParseException {
+	public static Neuron fromJSON(File _neuronFile) throws FileNotFoundException, ParseException {
 		JSONObject jsonNeuron = (JSONObject) Files.json(_neuronFile);
 		
 		Neuron n = new Neuron();
@@ -359,11 +434,11 @@ public class Neuron implements Serializable {
 			n.parentCategory = null;
 		}
 		
-		n.SynapticEndings = new ArrayList<File>();
+		n.synapticEndings = new ArrayList<File>();
 		JSONArray synaptics = (JSONArray) jsonNeuron.get("synapticEndings");
 		for (Object path : synaptics) {
 			String filePath = Constants.STORAGE_ROOT + (String) path;
-			n.SynapticEndings.add(new File(filePath));
+			n.synapticEndings.add(new File(filePath));
 		}
 		
 		n.location = new File(Constants.STORAGE_ROOT + (String) jsonNeuron.get("location"));
@@ -394,7 +469,7 @@ public class Neuron implements Serializable {
 		}
 		
 		neuronJson.put("synapticEndings", new JSONArray());
-		for (File synapse : this.SynapticEndings) {
+		for (File synapse : this.synapticEndings) {
 			((JSONArray) neuronJson.get("synapticEndings")).add(synapse.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
 		}
 		neuronJson.put("location", this.location.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);

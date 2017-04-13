@@ -1,0 +1,10 @@
+{
+	"associatedMorpheme": "label",
+	"categoryPath": "mind/storage/neurons/label/",
+	"synapticEndings": [
+		"pathways/35.tlink"
+	],
+	"parentCategory": "NO_CATEGORY",
+	"associatedEmotion": "Neutral",
+	"location": "core/categories/label.ctgry"
+}

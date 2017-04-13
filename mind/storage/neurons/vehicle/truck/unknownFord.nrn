@@ -1,9 +1,0 @@
-{
-	"associatedMorpheme": "unknownFord",
-	"synapticEndings": [
-		"pathways/93.tlink"
-	],
-	"parentCategory": "core/categories/truck.ctgry",
-	"associatedEmotion": "Content",
-	"location": "neurons/vehicle/truck/unknownFord.nrn"
-}

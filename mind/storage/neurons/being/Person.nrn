@@ -1,0 +1,9 @@
+{
+	"associatedMorpheme": "Person",
+	"synapticEndings": [
+		"pathways/37.tlink"
+	],
+	"parentCategory": "core/categories/being.ctgry",
+	"associatedEmotion": "Neutral",
+	"location": "neurons/being/Person.nrn"
+}

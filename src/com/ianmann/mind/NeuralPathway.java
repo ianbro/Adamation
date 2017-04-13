@@ -96,7 +96,7 @@ public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
 	 */
 	private Neuron getNeuronFromFile() {
 		try {
-			return Neuron.parse(this.recieverNeuron);
+			return Neuron.fromJSON(this.recieverNeuron);
 		} catch (FileNotFoundException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

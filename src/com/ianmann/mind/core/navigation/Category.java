@@ -11,6 +11,7 @@ import org.json.simple.parser.ParseException;
 import com.ianmann.mind.Neuron;
 import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.emotions.EmotionUnit;
+import com.ianmann.mind.storage.organization.NeuronType;
 import com.ianmann.utils.utilities.Files;
 
 public class Category extends Neuron {
@@ -39,8 +40,8 @@ public class Category extends Neuron {
 		super();
 	}
 	
-	public Category(EmotionUnit _associated, String _label, Category _parentCategory) {
-		super(null, _associated, _label, _parentCategory);
+	public Category(String _label, Category _parentCategory) {
+		super(NeuronType.CATEGORY, EmotionUnit.NEUTRAL, _label, _parentCategory);
 		this.categoryPath = this.getCategoryLocation();
 		if (this.parentCategory != null) {
 			try {
@@ -54,38 +55,8 @@ public class Category extends Neuron {
 		}
 	}
 	
-	public Category(EmotionUnit _associated, Category _parentCategory) {
-		super(null, _associated, _parentCategory);
-		this.categoryPath = this.getCategoryLocation();
-		if (this.parentCategory != null) {
-			try {
-				this.assimilate(Category.parse(this.parentCategory));
-			} catch (FileNotFoundException | ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			this.save();
-		}
-	}
-	
-	public Category(EmotionUnit _associated) {
-		super(null, _associated, null);
-		this.categoryPath = this.getCategoryLocation();
-		if (this.parentCategory != null) {
-			try {
-				this.assimilate(Category.parse(this.parentCategory));
-			} catch (FileNotFoundException | ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			this.save();
-		}
-	}
-	
-	public Category(EmotionUnit _associated, String _label) {
-		super(null, _associated, _label, null);
+	public Category(Category _parentCategory) {
+		super(NeuronType.CATEGORY, EmotionUnit.NEUTRAL, _parentCategory);
 		this.categoryPath = this.getCategoryLocation();
 		if (this.parentCategory != null) {
 			try {
@@ -177,6 +148,26 @@ public class Category extends Neuron {
 	}
 	
 	/**
+	 * Returns true if _category is either equal to or a parent
+	 * category of _category. Otherwise, false is returned.
+	 * @param _category
+	 * @return
+	 */
+	public boolean isSubCategory(Category _category) {
+		if (this.equals(_category)) {
+			return true;
+		}
+		
+		Category parent = this;
+		while (parent.getParentCategory() != null) {
+			if (parent.equals(_category)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * @Override
 	 * Add the folder that is represented by this category.
 	 */
@@ -201,11 +192,11 @@ public class Category extends Neuron {
 		
 		n.parentCategory = new File(Constants.STORAGE_ROOT + (String) jsonNeuron.get("parentCategory"));
 		
-		n.SynapticEndings = new ArrayList<File>();
+		n.synapticEndings = new ArrayList<File>();
 		JSONArray synaptics = (JSONArray) jsonNeuron.get("synapticEndings");
 		for (Object path : synaptics) {
 			String filePath = Constants.STORAGE_ROOT + (String) path;
-			n.SynapticEndings.add(new File(filePath));
+			n.synapticEndings.add(new File(filePath));
 		}
 		
 		n.location = new File(Constants.STORAGE_ROOT + (String) jsonNeuron.get("location"));

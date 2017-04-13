@@ -1,9 +1,0 @@
-{
-	"associatedMorpheme": "definition",
-	"categoryPath": "mind/storage/neurons/entity/definition/",
-	"synapticEndings": [
-	],
-	"parentCategory": "core/categories/entity.ctgry",
-	"associatedEmotion": "Content",
-	"location": "core/categories/definition.ctgry"
-}

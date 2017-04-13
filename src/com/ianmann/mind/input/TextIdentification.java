@@ -63,7 +63,7 @@ public abstract class TextIdentification {
 			File neuronFile = new File(neuronPath);
 			Neuron n;
 			try {
-				n = Neuron.parse(neuronFile);
+				n = Neuron.fromJSON(neuronFile);
 				return n;
 			} catch (FileNotFoundException | ParseException e) {
 				// TODO Auto-generated catch block

@@ -9,11 +9,13 @@ import org.json.simple.parser.ParseException;
 import com.ianmann.mind.Neuron;
 import com.ianmann.mind.Stimulant;
 import com.ianmann.mind.core.Constants;
+import com.ianmann.mind.core.navigation.Category;
 import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.input.TextIdentification;
 import com.ianmann.mind.storage.ShortTermMemory;
 import com.ianmann.mind.storage.assimilation.Assimilation;
 import com.ianmann.mind.storage.assimilation.MorphemeNotFound;
+import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
 
 public abstract class TestThoughtRelationships {
 
@@ -23,34 +25,12 @@ public abstract class TestThoughtRelationships {
 		ShortTermMemory.initialize();
 		TextIdentification.initialize();
 
-//		Neuron n = new Neuron(null, EmotionUnit.CONTENT, "run");
-//		Neuron ne = new Neuron(null, EmotionUnit.CONTENT, "ing");
+		Category c = new Category("label", null);
+		Category being = new Category("being", null);
 		
-//		Stimulant comStim = new Stimulant("Communication", n2);
-//		Stimulant comStim = Stimulant.deserialize(new File(Constants.STIMULANT_ROOT + "Communication.stim"));
-//		
-//		System.out.println(comStim);
-		
-//		try {
-//			Neuron n1 = TextIdentification.getNeuronForMorpheme("Hello");
-//			
-//			System.out.println(Arrays.toString(n1.getAssociatedMorphemes()));
-//		} catch (MorphemeNotFound e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//
-//		
-//		try {
-//			Neuron n3 = TextIdentification.getNeuronForMorpheme("Ian");
-//			Neuron n2 = TextIdentification.getNeuronForMorpheme("name");
-//			System.out.println(Arrays.toString(n3.getAssociatedMorphemes()));
-//			System.out.println(Arrays.toString(n2.getAssociatedMorphemes()));
-//		} catch (MorphemeNotFound e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		EntityStructure name = EntityStructure.create(null, c, "Name");
+		EntityStructure person = EntityStructure.create(null, being, "Person");
+		person.addAttribute(name.asNeuron());
 	}
 
 }

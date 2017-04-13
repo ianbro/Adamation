@@ -1,9 +1,0 @@
-{
-	"associatedMorpheme": "f150",
-	"synapticEndings": [
-		"pathways/90.tlink"
-	],
-	"parentCategory": "core/categories/truck.ctgry",
-	"associatedEmotion": "Glad",
-	"location": "neurons/vehicle/truck/f150.nrn"
-}

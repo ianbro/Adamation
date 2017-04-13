@@ -17,7 +17,6 @@ import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.input.Sensor;
 import com.ianmann.mind.input.TextIdentification;
-import com.ianmann.mind.patterns.language.text.TextProcessor;
 import com.ianmann.mind.storage.ShortTermMemory;
 
 /**
@@ -199,14 +198,14 @@ public class TextSensor extends Sensor {
 	 * @param _input
 	 */
 	private void onTalk(String _input) {
-		TextProcessor english = null;
-		try {
-			english = new TextProcessor(null, EmotionUnit.CONTENT, "processor_english", Neuron.parse(new File(Constants.NEURON_ROOT + "49.nrn")), this.memoryLocation);
-			english.process(_input);
-		} catch (FileNotFoundException | ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		TextProcessor english = null;
+//		try {
+//			english = new TextProcessor(null, EmotionUnit.CONTENT, "processor_english", Neuron.parse(new File(Constants.NEURON_ROOT + "49.nrn")), this.memoryLocation);
+//			english.process(_input);
+//		} catch (FileNotFoundException | ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 }

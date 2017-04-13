@@ -27,17 +27,18 @@ public class EntityInstance extends Neuron {
 	
 	public EntityInstance(EntityStructure _structure) {
 		super();
-		this.structure = _structure.location;
+//		this.structure = _structure.location;
 	}
 	
 	public EntityStructure getStructure() {
-		try {
-			return (EntityStructure) ActionStructure.parse(this.structure);
-		} catch (FileNotFoundException | ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+//		try {
+//			return (EntityStructure) ActionStructure.fromJSON(this.structure);
+//		} catch (FileNotFoundException | ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return null;
+//		}
+		return null;
 	}
 	
 	public ArrayList<Neuron> getAttributes() {
@@ -45,7 +46,7 @@ public class EntityInstance extends Neuron {
 		
 		for (File nFile : this.attributes) {
 			try {
-				neurons.add(Neuron.parse(nFile));
+				neurons.add(Neuron.fromJSON(nFile));
 			} catch (FileNotFoundException | ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -56,34 +57,34 @@ public class EntityInstance extends Neuron {
 	}
 	
 	public void addAttribute(Neuron _attribute, Neuron _n) throws AttributeNotFoundException {
-		int indexOfAttribute = -1;
-		
-		EntityStructure structure = null;
-		try {
-			structure = (EntityStructure) EntityStructure.parse(this.structure);
-		} catch (FileNotFoundException | ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		for (int i = 0; i < structure.getAttributes().size(); i ++) {
-			Neuron attribute = structure.getAttributes().get(i);
-			if (attribute.equals(_attribute)) {
-				indexOfAttribute = i;
-				break;
-			}
-		}
-		
-		if (indexOfAttribute == -1) {
-			throw new AttributeNotFoundException(_attribute);
-		} else {
-			this.attributes.add(indexOfAttribute, _n.location);
-		}
+//		int indexOfAttribute = -1;
+//		
+//		EntityStructure structure = null;
+//		try {
+//			structure = (EntityStructure) EntityStructure.fromJSON(this.structure);
+//		} catch (FileNotFoundException | ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		for (int i = 0; i < structure.getAttributes().size(); i ++) {
+//			Neuron attribute = structure.getAttributes().get(i);
+//			if (attribute.equals(_attribute)) {
+//				indexOfAttribute = i;
+//				break;
+//			}
+//		}
+//		
+//		if (indexOfAttribute == -1) {
+//			throw new AttributeNotFoundException(_attribute);
+//		} else {
+//			this.attributes.add(indexOfAttribute, _n.location);
+//		}
 	}
 	
 	public void addAttribute(Neuron _attribute, File _n) throws FileNotFoundException, AttributeNotFoundException {
 		try {
-			Neuron toAdd = Neuron.parse(_n);
+			Neuron toAdd = Neuron.fromJSON(_n);
 			this.addAttribute(_attribute, toAdd);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

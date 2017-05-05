@@ -30,6 +30,7 @@ import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
 import com.ianmann.mind.storage.organization.basicNetwork.NeuralNetwork;
 import com.ianmann.mind.utils.Serializer;
 import com.ianmann.utils.utilities.Files;
+import com.ianmann.utils.utilities.GeneralUtils;
 import com.ianmann.utils.utilities.JSONUtils;
 
 /**
@@ -95,7 +96,8 @@ public class Neuron implements Serializable {
 	}
 	
 	/**
-	 * Create Neuron with an existing neuron linked to it.
+	 * Create Neuron with an existing neuron linked to it. This does not actually save
+	 * the neuron to storage. You must seperately call save() on this neuron.
 	 * @param _linkedThought
 	 * @param _associated
 	 */
@@ -106,7 +108,8 @@ public class Neuron implements Serializable {
 	/**
 	 * Create Neuron with an existing neuron linked to it.
 	 * This takes a string that can later be used by a developer
-	 * to have a sense of what this neuron represents.
+	 * to have a sense of what this neuron represents. This does not actually save
+	 * the neuron to storage. You must seperately call save() on this neuron.
 	 * @param _linkedThought
 	 * @param _associated
 	 */
@@ -147,7 +150,12 @@ public class Neuron implements Serializable {
 				if (this.parentNeuron.delete()) {
 					NeuralPathway t = new NeuralPathway(_neuron.location);
 					this.parentNeuron = t.location;
+					this.save();
 				}
+			} else {
+				NeuralPathway t = new NeuralPathway(_neuron.location);
+				this.parentNeuron = t.location;
+				this.save();
 			}
 		}
 	}
@@ -318,7 +326,7 @@ public class Neuron implements Serializable {
 	}
 	
 	/**
-	 * Make new pathway to a thought.
+	 * Make new pathway to a thought. This automatically saves the changes to storage.
 	 * @param _thought
 	 */
 	public NeuralPathway addNeuralPathway(Neuron _thought) {
@@ -406,7 +414,6 @@ public class Neuron implements Serializable {
 	 * in the file, overwriting the old data with the new data.
 	 */
 	public void save() {
-		FileOutputStream fos = null;
 		try {
 			try {
 				if (!this.location.exists()) {
@@ -426,6 +433,12 @@ public class Neuron implements Serializable {
 		}
 	}
 	
+	/**
+	 * Determines whether this neuron is the same as that in o. This is true if o.location is
+	 * the same file as this.location.
+	 * @param o
+	 * @return
+	 */
 	public boolean equals(Neuron o) {
 		return this.location.equals(o.location);
 	}
@@ -447,6 +460,13 @@ public class Neuron implements Serializable {
 			n.parentCategory = new File(Constants.STORAGE_ROOT + (String) jsonNeuron.get("parentCategory"));
 		} else {
 			n.parentCategory = null;
+		}
+		
+		String parentNeuronString = (String) jsonNeuron.get("parentNeuron");
+		if (!parentNeuronString.equals("NO_PARENT")) {
+			n.parentNeuron = new File(Constants.STORAGE_ROOT + (String) jsonNeuron.get("parentNeuron"));
+		} else {
+			n.parentNeuron = null;
 		}
 		
 		n.synapticEndings = new ArrayList<File>();
@@ -485,6 +505,12 @@ public class Neuron implements Serializable {
 			neuronJson.put("parentCategory", "NO_CATEGORY");
 		}
 		
+		if (this.parentNeuron != null) {
+			neuronJson.put("parentNeuron", this.parentNeuron.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
+		} else {
+			neuronJson.put("parentNeuron", "NO_PARENT");
+		}
+		
 		neuronJson.put("synapticEndings", new JSONArray());
 		for (File synapse : this.synapticEndings) {
 			((JSONArray) neuronJson.get("synapticEndings")).add(synapse.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
@@ -499,5 +525,14 @@ public class Neuron implements Serializable {
 		}
 		
 		return neuronJson;
+	}
+	
+	public String toString() {
+		String str = "<Neuron: type(" + NeuronType.mapType(this.type) + ")";
+		if (!GeneralUtils.isNumeric(this.associatedMorpheme)) {
+			str = str + ";label(" + this.associatedMorpheme + ")";
+		}
+		str = str + ">";
+		return str;
 	}
 }

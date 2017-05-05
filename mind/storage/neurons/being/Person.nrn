@@ -1,11 +1,12 @@
 {
-	"associatedMorpheme": "Person",
+	"associatedMorpheme": "person",
+	"parentNeuron": "pathways/97.tlink",
 	"synapticEndings": [
-		"pathways/15.tlink",
-		"pathways/16.tlink"
+		"pathways/98.tlink",
+		"pathways/99.tlink"
 	],
 	"parentCategory": "core/categories/being.ctgry",
 	"associatedEmotion": "Neutral",
-	"location": "neurons/being/Person.nrn",
+	"location": "neurons/being/person.nrn",
 	"type": 1
 }

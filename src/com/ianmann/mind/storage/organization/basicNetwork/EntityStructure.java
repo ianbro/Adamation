@@ -13,6 +13,7 @@ import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.core.navigation.Category;
 import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.storage.organization.NeuronType;
+import com.ianmann.utils.utilities.GeneralUtils;
 
 public class EntityStructure extends NeuralNetwork {
 
@@ -23,7 +24,7 @@ public class EntityStructure extends NeuralNetwork {
 	 * <br><br>
 	 * Each file contains a thought link to a neuron
 	 */
-	protected ArrayList<File> attributes = new ArrayList<File>();
+	private ArrayList<File> attributes = new ArrayList<File>();
 	
 	/**
 	 * Instantiate an Entity Structure network. This contains multiple attributes and acts
@@ -70,13 +71,23 @@ public class EntityStructure extends NeuralNetwork {
 		}
 		return (EntityStructure) toCreate.parsed();
 	}
+	
+	public EntityInstance instantiateStructure(Category _category) {
+		return EntityInstance.create(this, _category);
+	}
+	
+	public EntityInstance instantiateStructure(Category _category, String _label) {
+		return EntityInstance.create(this, _category, _label);
+	}
 
 	/**
 	 * @Override
 	 * Noun definition neurons and Attributes will be put into this networks list of
 	 * attributes.
 	 */
-	public void sortNetwork() {
+	protected void sortNetwork() {
+		this.attributes = new ArrayList<File>();
+		
 		for (File relatedNeuron : this.root.getSynapticEndings()) {
 			NeuralPathway currentPathway = NeuralPathway.deserialize(relatedNeuron);
 			Neuron current = currentPathway.fireSynapse();
@@ -85,6 +96,20 @@ public class EntityStructure extends NeuralNetwork {
 			} else if (current.getType() == NeuronType.ATTRIBUTE) {
 				this.attributes.add(relatedNeuron);
 			}
+		}
+	}
+	
+	/**
+	 * Returns an EntityStructure representing the parent network of this network. This uses
+	 * this networks root Neuron and retrieves the network corresponding to that Neuron's
+	 * parent Neuron.
+	 * @return
+	 */
+	public EntityStructure getParentNetwork() {
+		if (this.root.getParentNeuron() != null) {
+			return new EntityStructure(this.root.getParentNeuron());
+		} else {
+			return null;
 		}
 	}
 	
@@ -108,24 +133,15 @@ public class EntityStructure extends NeuralNetwork {
 	public ArrayList<Neuron> getAttributes() {
 		ArrayList<Neuron> neurons = new ArrayList<Neuron>();
 		
-		if (this.root.getParentNeuron() != null) {
-			for (File neuronFile : ((EntityStructure) this.root.getParentNeuron().parsed()).attributes) {
-				try {
-					neurons.add(Neuron.fromJSON(neuronFile));
-				} catch (FileNotFoundException | ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		EntityStructure parentNetwork = this.getParentNetwork();
+		if (parentNetwork != null) {
+			for (Neuron neuron : parentNetwork.getAttributes()) {
+				neurons.add(neuron);
 			}
 		}
 		
-		for (File nFile : this.attributes) {
-			try {
-				neurons.add(Neuron.fromJSON(nFile));
-			} catch (FileNotFoundException | ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		for (File pathwayFile : this.attributes) {
+			neurons.add(NeuralPathway.deserialize(pathwayFile).fireSynapse());
 		}
 		
 		return neurons;
@@ -154,7 +170,7 @@ public class EntityStructure extends NeuralNetwork {
 	public void addAttribute(Neuron _n) {
 		if (_n.getType() == NeuronType.NOUN_DEFINITION || _n.getType() == NeuronType.ATTRIBUTE) {
 			NeuralPathway synapse = this.root.addNeuralPathway(_n);
-			this.attributes.add(synapse.location);
+			this.sortNetwork();
 		}
 	}
 	
@@ -171,5 +187,69 @@ public class EntityStructure extends NeuralNetwork {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Determines whether or not this entity instance can be assigned an instance of _attribute.
+	 * It is assumed to be true if _attribute is contained in this EntityStructures list of attributes.
+	 * @param _attribute
+	 * @return
+	 */
+	public boolean hasAttribute(EntityStructure _attribute) {
+		for (Neuron neuron : this.getAttributes()) {
+			if (neuron.location.equals(_attribute.root.location)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Determines whether or not this entity instance can be assigned an instance of _attribute.
+	 * It is assumed to be true if _attribute is contained in this EntityStructures list of attributes.
+	 * @param _attribute
+	 * @return
+	 */
+	public boolean hasAttribute(AttributeStructure _attribute) {
+		for (Neuron neuron : this.getAttributes()) {
+			if (neuron.location.equals(_attribute.root.location)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Determines whether or not this entity instance can be assigned an instance of _attribute.
+	 * It is assumed to be true if _attribute is contained in this EntityStructures list of attributes.
+	 * @param _attribute
+	 * @return
+	 */
+	public boolean hasAttribute(Neuron _attribute) {
+		for (Neuron neuron : this.getAttributes()) {
+			if (neuron.location.equals(_attribute.location)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Determines whether this neuron is the same as that in _entityStructure. This is true if
+	 * _entityStructure.root.location is the same file as this.root.location.
+	 * @param o
+	 * @return
+	 */
+	public boolean equals(EntityStructure _entityStructure) {
+		return this.asNeuron().equals(_entityStructure.asNeuron());
+	}
+	
+	public String toString() {
+		String str = "<EntityStructure: type(" + NeuronType.mapType(this.root.getType()) + ")";
+		if (!GeneralUtils.isNumeric(this.root.getAssociatedMorpheme())) {
+			str = str + ";label(" + this.root.getAssociatedMorpheme() + ")";
+		}
+		str = str + ">";
+		return str;
 	}
 }

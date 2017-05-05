@@ -13,7 +13,7 @@ import com.ianmann.mind.storage.organization.NeuronType;
 
 public class Description extends NeuralNetwork {
 	
-	private File attributeStructureNeuron;
+	private File attributeStructureNeuralPathway;
 
 	public Description(Neuron _root) {
 		super(_root);
@@ -43,10 +43,11 @@ public class Description extends NeuralNetwork {
 	public void sortNetwork() {
 		// TODO Auto-generated method stub
 		for (int i = 0; i < this.root.getSynapticEndings().size(); i ++) {
-			Neuron current = NeuralPathway.deserialize(this.root.getSynapticEndings().get(i)).fireSynapse();
+			NeuralPathway currentPathway = NeuralPathway.deserialize(this.root.getSynapticEndings().get(i));
+			Neuron current = currentPathway.fireSynapse();
 			if (current.getType() == NeuronType.ATTRIBUTE) {
 				if (((AttributeStructure) current.parsed()).hasPossibility(this.root)) {
-					this.attributeStructureNeuron = current.location;
+					this.attributeStructureNeuralPathway = currentPathway.location;
 				}
 			}
 		}
@@ -58,12 +59,20 @@ public class Description extends NeuralNetwork {
 	 * @param _structure
 	 */
 	public void setStructure(AttributeStructure _structure) {
-		if (this.attributeStructureNeuron != null) {
-			this.root.removeNeuralPathway(NeuralPathway.deserialize(this.attributeStructureNeuron).fireSynapse());
+		if (this.attributeStructureNeuralPathway != null) {
+			this.root.removeNeuralPathway(NeuralPathway.deserialize(this.attributeStructureNeuralPathway).fireSynapse());
 		}
 		NeuralPathway newPathWay = this.root.addNeuralPathway(_structure.root);
-		this.attributeStructureNeuron = newPathWay.location;
+		this.attributeStructureNeuralPathway = newPathWay.location;
 		_structure.addPossibility(this.root);
+	}
+	
+	/**
+	 * Returns the attribute structure for which this description is a possibility.
+	 * @return
+	 */
+	public AttributeStructure getStructure() {
+		return ((AttributeStructure) NeuralPathway.deserialize(this.attributeStructureNeuralPathway).fireSynapse().parsed());
 	}
 
 }

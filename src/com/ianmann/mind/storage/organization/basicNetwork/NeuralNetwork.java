@@ -33,6 +33,6 @@ public abstract class NeuralNetwork {
 	 * list of neurons to a coherant network that which the neuron can know how exactly a given
 	 * neuron is related to it.
 	 */
-	public abstract void sortNetwork();
+	protected abstract void sortNetwork();
 
 }

@@ -20,3 +20,11 @@ ex. scenareo/state neuron for a student eating an apple will look like the follo
 	neurons for nouns in the scene (apple, student, students_desk, <other background stuff like back wall of the room.>)
 	neuron for actions such as eating or sitting still in the chair.
 	neuron for the focus noun and action like student eating
+	
+When looking at videos of neuron structures on youtube, I realized that neurons do not simple have one list of synaptic
+receptors. Instead, multiple dendrite stimulants (connections going into the neuron) group together and connect at one point
+to the neurons. The signal is then sent to every single dendrite response (connections going out of the neuron). The actual
+connection itself decides if it wants to keep the message going. So one dendrite might pass on the message but another might
+stop the message.
+
+Image of neuron: http://bio1152.nicerweb.com/Locked/media/ch48/48_05NeuronStructure.jpg

@@ -54,30 +54,12 @@ public class Neuron implements Serializable {
 	 */
 	protected File parentCategory;
 	
-	/**
-	 * Reference to a neuron that is the parent neuron
-	 * to this. For example, if this current neuron is
-	 * a poodle, this might be a dog.
-	 */
-	protected File parentNeuron;
-	
-	/**
-	 * References to any neuron that is linked to this neuron.
-	 * The AI will use this list to link through the thoughts.
-	 * The file it points to contains one {@code NeuralPathway} object
-	 * and can be thought of as a synaptic connection.
-	 */
-	protected ArrayList<File> synapticEndings;
+	protected ArrayList<HashMap<File>>
 	
 	/**
 	 * File in which this object is stored.
 	 */
 	public File location;
-	
-	/**
-	 * EmotionUnit that is associated with this thought
-	 */
-	protected EmotionUnit associatedEmotion;
 	
 	/**
 	 * Used by developers or other users looking into the AI

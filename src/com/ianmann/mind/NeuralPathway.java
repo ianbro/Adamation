@@ -21,7 +21,7 @@ import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.utils.Serializer;
 import com.ianmann.utils.utilities.Files;
 
-public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
+public class NeuralPathway extends File implements Serializable {
 
 	/**
 	 * 
@@ -48,11 +48,6 @@ public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
 	private File recieverNeuron;
 	
 	/**
-	 * File in which this object is stored.
-	 */
-	public File location;
-	
-	/**
 	 * Comparator object for comparing two NeuralPathway objects. This allows arrays of NeuralPathway
 	 * objects to be sorted.
 	 */
@@ -70,14 +65,13 @@ public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
 		}
 	};
 	
-	public NeuralPathway(File _resultThoughtFile) {
+	public NeuralPathway(String _path, Neuron _resultThoughtFile) {
+		super(_path);
 		this.recieverNeuron = _resultThoughtFile;
 		this.connectionSize = 0.00001;
 		
-		this.location = new File(this.getFileLocation());
-		
 		try {
-			java.nio.file.Files.createFile(this.location.toPath());
+			java.nio.file.Files.createFile(this.toPath());
 			this.save();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -85,27 +79,29 @@ public class NeuralPathway implements Serializable, Comparable<NeuralPathway> {
 		}
 	}
 	
+	public static NeuralPathway create(Neuron _resultThoughtFile) {
+		String location = getNewFileLocation();
+		NeuralPathway dendrite = new NeuralPathway(location, _resultThoughtFile);
+		return dendrite;
+	}
+	
 	/**
 	 * Retrieve the location to the file containing this Thought Link
 	 */
-	private String getFileLocation() {
-		if (this.location == null) {
-			Scanner s;
-			try {
-				s = new Scanner(new File(Constants.PATHWAY_ROOT + "ids"));
-				int next = s.nextInt();
-				s.close();
-				PrintWriter p = new PrintWriter(new File(Constants.PATHWAY_ROOT + "ids"));
-				p.print(next+1);
-				p.close();
-				return Constants.PATHWAY_ROOT + String.valueOf(next) + ".tlink";
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return null;
-			}
-		} else {
-			return this.location.getPath();
+	private static String getNewFileLocation() {
+		Scanner s;
+		try {
+			s = new Scanner(new File(Constants.PATHWAY_ROOT + "ids"));
+			int next = s.nextInt();
+			s.close();
+			PrintWriter p = new PrintWriter(new File(Constants.PATHWAY_ROOT + "ids"));
+			p.print(next+1);
+			p.close();
+			return Constants.PATHWAY_ROOT + String.valueOf(next) + ".tlink";
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
 		}
 	}
 	

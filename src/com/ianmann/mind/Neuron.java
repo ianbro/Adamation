@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import org.json.simple.JSONArray;
@@ -39,7 +40,7 @@ import com.ianmann.utils.utilities.JSONUtils;
  * @author kirkp1ia
  *
  */
-public class Neuron implements Serializable {
+public class Neuron extends File {
 	
 	/**
 	 * Denotes the structural layout of the network of neurons
@@ -54,12 +55,13 @@ public class Neuron implements Serializable {
 	 */
 	protected File parentCategory;
 	
-	protected ArrayList<HashMap<File>>
-	
 	/**
-	 * File in which this object is stored.
+	 * Groups of postsynaptic dendrites. These are the connections to another
+	 * Neuron. They are grouped so that the networks can be parsed. For
+	 * example, one list in this hashmap may be a collection of attributes
+	 * where as another list may be a collection of abilities.
 	 */
-	public File location;
+	protected HashMap<Integer, ArrayList<File>> axon;
 	
 	/**
 	 * Used by developers or other users looking into the AI
@@ -73,18 +75,8 @@ public class Neuron implements Serializable {
 	/**
 	 * Used for parsing json into a neuron object.
 	 */
-	protected Neuron() {
-		
-	}
-	
-	/**
-	 * Create Neuron with an existing neuron linked to it. This does not actually save
-	 * the neuron to storage. You must seperately call save() on this neuron.
-	 * @param _linkedThought
-	 * @param _associated
-	 */
-	public Neuron(int _type, EmotionUnit _associated, Category _category) {
-		this.initialize(_type, _associated, null, _category);
+	protected Neuron(String _path) {
+		super(_path);
 	}
 	
 	/**
@@ -95,9 +87,22 @@ public class Neuron implements Serializable {
 	 * @param _linkedThought
 	 * @param _associated
 	 */
-	public Neuron(int _type, EmotionUnit _associated, String _label, Category _category) {
+	protected Neuron(String _path, int _type, EmotionUnit _associated, String _label, Category _category) {
+		super(_path);
 		this.associatedMorpheme = _label;
 		this.initialize(_type, _associated, _label, _category);
+	}
+	
+	public static Neuron create(int _type, EmotionUnit _associated, Category _category) {
+		String location = getNewFileLocation();
+		Neuron neuron = new Neuron(location, _type, _associated, null, _category);
+		return neuron;
+	}
+	
+	public static Neuron create(int _type, EmotionUnit _associated, String _label, Category _category) {
+		String location = getNewFileLocation();
+		Neuron neuron = new Neuron(location, _type, _associated, _label, _category);
+		return neuron;
 	}
 	
 	/**
@@ -114,7 +119,6 @@ public class Neuron implements Serializable {
 		
 		this.setAssociatedMorpheme(_label);
 		this.associatedEmotion = _associated;
-		this.location = new File(this.getFileLocation());
 	}
 	
 	/**
@@ -246,49 +250,42 @@ public class Neuron implements Serializable {
 	 * If no associated morpheme is found for this neuron, it will
 	 * use an id from neuron ids file.
 	 */
-	protected String getFileLocation() {
-		if (this.location == null) {
-			// Get category folder
-			String pathToCategory = "";
-			if (this.parentCategory != null) {
-				pathToCategory = this.getParentCategory().getCategoryPath();
-			} else {
-				// no category so just set pathToCategory to the root neuron folder
-				pathToCategory = Constants.NEURON_ROOT;
-			}
-			
-			if (this.associatedMorpheme == null) {
-				/*
-				 * If no morpheme is found for this neuron,
-				 * grab the id out of id file and use that for
-				 * the file name. Then increment the next id.
-				 */
-				Scanner s;
-				try {
-					s = new Scanner(new File(Constants.NEURON_ROOT + "ids"));
-					int next = s.nextInt();
-					s.close();
-					PrintWriter p = new PrintWriter(new File(Constants.NEURON_ROOT + "ids"));
-					p.print(next+1);
-					p.close();
-					return pathToCategory + String.valueOf(next) + ".nrn";
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return null;
-				}
-			} else {
-				/*
-				 * A morpheme is saved for this neuron so just use
-				 * that as the file name.
-				 */
-				return pathToCategory + this.associatedMorpheme + ".nrn";
+	protected static String getNewFileLocation() {
+		// Get category folder
+		String pathToCategory = "";
+		if (this.parentCategory != null) {
+			pathToCategory = this.getParentCategory().getCategoryPath();
+		} else {
+			// no category so just set pathToCategory to the root neuron folder
+			pathToCategory = Constants.NEURON_ROOT;
+		}
+		
+		if (this.associatedMorpheme == null) {
+			/*
+			 * If no morpheme is found for this neuron,
+			 * grab the id out of id file and use that for
+			 * the file name. Then increment the next id.
+			 */
+			Scanner s;
+			try {
+				s = new Scanner(new File(Constants.NEURON_ROOT + "ids"));
+				int next = s.nextInt();
+				s.close();
+				PrintWriter p = new PrintWriter(new File(Constants.NEURON_ROOT + "ids"));
+				p.print(next+1);
+				p.close();
+				return pathToCategory + String.valueOf(next) + ".nrn";
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
 			}
 		} else {
 			/*
-			 * The location is already stored so just return it.
+			 * A morpheme is saved for this neuron so just use
+			 * that as the file name.
 			 */
-			return this.location.getPath();
+			return pathToCategory + this.associatedMorpheme + ".nrn";
 		}
 	}
 	

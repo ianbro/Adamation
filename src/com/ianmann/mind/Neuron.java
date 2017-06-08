@@ -81,9 +81,17 @@ public class Neuron extends File {
 	 * It is assumed that this neuron already exists in memory. This
 	 * constructor merely wraps it in a Neuron class for use in the
 	 * program.
+	 * 
+	 * If _doReadFile is true, this constructor will read the data in
+	 * the file at _path into the attributes for this Neuron.
+	 * @throws ParseException 
+	 * @throws FileNotFoundException 
 	 */
-	protected Neuron(String _path) {
+	protected Neuron(String _path, boolean _doReadFile) throws FileNotFoundException, ParseException {
 		super(_path);
+		if (_doReadFile) {
+			this.readFile();
+		}
 	}
 	
 	/**
@@ -247,13 +255,22 @@ public class Neuron extends File {
 	}
 	
 	/**
-	 * Parse json data in a file into a Neuron object
+	 * <p>
+	 * Parse json data in this Neurons file into this objects attributes.
+	 * </p>
+	 * <p>
+	 * When loading the axon, this method uses the NeuralPathway
+	 * constructor that takes a path (String) and the boolean
+	 * doLoadAttributes. This is to keep the program from loading
+	 * every Neuron and NeuralPathway at once. The loading stops at this
+	 * Neuron.
+	 * </p>
 	 * @param _neuronFile
 	 * @return
 	 * @throws FileNotFoundException
 	 * @throws ParseException
 	 */
-	private void readFile() throws FileNotFoundException, ParseException {
+	public void loadAttributes() throws FileNotFoundException, ParseException {
 		JSONObject jsonNeuron = (JSONObject) Files.json(this);
 		
 		this.axon = new ArrayList<ArrayList<NeuralPathway>>();
@@ -335,6 +352,7 @@ class NeuronManager implements StorageManageable<Neuron> {
 				(Integer) _params[0],
 				(String) _params[1]
 		);
+		this.save(neuron);
 		return neuron;
 	}
 

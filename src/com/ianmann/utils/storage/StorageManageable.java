@@ -39,8 +39,11 @@ public interface StorageManageable<T> {
 	 * Delete an instance of T specified by _object. This
 	 * will remove this instance from storage.
 	 * @param _object
+	 * @return
+	 * true - if the object was successfuly deleted. <br>
+	 * false - if  the object was not deleted.
 	 */
-	public void delete(T _object);
+	public boolean delete(T _object);
 	
 	/**
 	 * Get a list of instances of T. The instances will

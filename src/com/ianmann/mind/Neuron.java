@@ -1,20 +1,10 @@
 package com.ianmann.mind;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import java.io.Serializable;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -23,14 +13,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import com.ianmann.mind.core.Constants;
-import com.ianmann.mind.core.navigation.Category;
-import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.storage.organization.NeuronType;
 import com.ianmann.mind.storage.organization.basicNetwork.AttributeStructure;
 import com.ianmann.mind.storage.organization.basicNetwork.Description;
 import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
 import com.ianmann.mind.storage.organization.basicNetwork.NeuralNetwork;
-import com.ianmann.mind.utils.Serializer;
 import com.ianmann.utils.storage.StorageManageable;
 import com.ianmann.utils.utilities.Files;
 import com.ianmann.utils.utilities.GeneralUtils;
@@ -44,6 +31,11 @@ import com.ianmann.utils.utilities.JSONUtils;
  */
 public class Neuron extends File {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Contains CRUD operations for the Neuron class. This class
 	 * implements the interface {@link StorageManageable}.
@@ -87,10 +79,10 @@ public class Neuron extends File {
 	 * @throws ParseException 
 	 * @throws FileNotFoundException 
 	 */
-	protected Neuron(String _path, boolean _doReadFile) throws FileNotFoundException, ParseException {
+	protected Neuron(String _path, boolean _doLoadAttributes) throws FileNotFoundException, ParseException {
 		super(_path);
-		if (_doReadFile) {
-			this.readFile();
+		if (_doLoadAttributes) {
+			this.loadAttributes();
 		}
 	}
 	
@@ -195,7 +187,7 @@ public class Neuron extends File {
 	 */
 	public NeuralPathway addNeuralPathway(Integer _dendriteGroup, Neuron _thought) {
 		if (_thought != null) {
-			NeuralPathway t = new NeuralPathway(_thought);
+			NeuralPathway t = NeuralPathway.storage.create(_thought);
 			this.axon.get(_dendriteGroup).add(t);
 			this.save();
 			return t;
@@ -210,16 +202,15 @@ public class Neuron extends File {
 	 * @param _thought
 	 */
 	public void removeNeuralPathway(int _dendriteGroupIndex, int _indexInGroup) {
-		NeuralPathway pathway = NeuralPathway.deserialize(this.axon.get(_dendriteGroupIndex).get(_indexInGroup));
+		NeuralPathway pathway = this.axon.get(_dendriteGroupIndex).get(_indexInGroup);
 		if (pathway != null) {
-			if (pathway.delete()) {
+			if (NeuralPathway.storage.delete(pathway)) {
 				this.axon.get(_dendriteGroupIndex).remove(_indexInGroup);
 				this.save();
 			}
 		} else {
 			return;
 		}
-		
 	}
 	
 	public NeuralNetwork parsed() {
@@ -275,11 +266,11 @@ public class Neuron extends File {
 		
 		this.axon = new ArrayList<ArrayList<NeuralPathway>>();
 		JSONArray axon = (JSONArray) jsonNeuron.get("axon");
-		for (int i; i < axon.size(); i++) {
+		for (int i = 0; i < axon.size(); i++) {
 			JSONArray dendriteGroup = (JSONArray) axon.get(i);
 			this.axon.add(new ArrayList<NeuralPathway>());
-			for (Object path : dendriteGroup) {
-				String filePath = Constants.STORAGE_ROOT + (String) path;
+			for (Object pathway : dendriteGroup) {
+				String filePath = Constants.PATHWAY_ROOT + ((NeuralPathway) pathway).getPathFromPathwayRoot();
 				this.axon.get(i).add(new NeuralPathway(filePath, false));
 			}
 		}
@@ -309,7 +300,7 @@ public class Neuron extends File {
 				(
 					(JSONArray) ((JSONArray) neuronJson.get("axon"))
 						.get(i)
-				).add(synapse.getAbsolutePath().split(Constants.STORAGE_ROOT)[1]);
+				).add(synapse.getAbsolutePath().split(Constants.PATHWAY_ROOT)[1]);
 			}
 		}
 		
@@ -322,6 +313,15 @@ public class Neuron extends File {
 		}
 		
 		return neuronJson;
+	}
+	
+	/**
+	 * Returns the path starting from the path to the folder containing
+	 * all Neuron files (not including that folder name).
+	 * @return
+	 */
+	protected String getPathFromNeuronRoot() {
+		return this.getAbsolutePath().split(Constants.NEURON_ROOT)[1];
 	}
 	
 	public String toString() {
@@ -341,7 +341,6 @@ class NeuronManager implements StorageManageable<Neuron> {
 	 * (Integer _type, String _associatedMorpheme)
 	 * This is what the method expects in it's parameters.
 	 * 
-	 *  (non-Javadoc)
 	 * @see com.ianmann.utils.storage.StorageManageable#create()
 	 */
 	@Override
@@ -357,12 +356,11 @@ class NeuronManager implements StorageManageable<Neuron> {
 	}
 
 	/**
-	 * Print this object to the file at {@link Neuron.location}.
+	 * Print this object to the file at this objects file path.
 	 * <br><br>
 	 * If the neuron file already exists, just rewrite the data
 	 * in the file, overwriting the old data with the new data.
 	 * 
-	 * (non-Javadoc)
 	 * @see com.ianmann.utils.storage.StorageManageable#save(java.lang.Object)
 	 */
 	@Override
@@ -390,24 +388,24 @@ class NeuronManager implements StorageManageable<Neuron> {
 	 * Removes this Neuron from memory. First, this will delete all of the
 	 * NeuralPathway objects that are contained in this Neuron. Then the actual
 	 * Neuron file will be deleted.
-	 * 
-	 * (non-Javadoc)
+	 * </p>
+	 * <p>
+	 * NOTE: This method calls the delete method on _object.
+	 * </p>
 	 * @see com.ianmann.utils.storage.StorageManageable#delete(java.lang.Object)
 	 */
 	@Override
-	public void delete(Neuron _object) {
-		// TODO Auto-generated method stub
+	public boolean delete(Neuron _object) {
 		for (int i = 0; i < _object.axon.size(); i++) {
 			for (int j = 0; j < _object.axon.get(i).size(); j++) {
 				_object.removeNeuralPathway(i, j);
 			}
 		}
-		_object.delete();
+		return _object.delete();
 	}
 
 	/**
 	 * DON'T USE THIS!
-	 * (non-Javadoc)
 	 * @see com.ianmann.utils.storage.StorageManageable#get(java.util.HashMap)
 	 */
 	@Override
@@ -417,12 +415,10 @@ class NeuronManager implements StorageManageable<Neuron> {
 
 	/** 
 	 * DON'T USE THIS!
-	 * (non-Javadoc)
 	 * @see com.ianmann.utils.storage.StorageManageable#getAll()
 	 */
 	@Override
 	public ArrayList<Neuron> getAll() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	

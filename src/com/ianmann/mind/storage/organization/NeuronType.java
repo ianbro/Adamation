@@ -2,6 +2,12 @@ package com.ianmann.mind.storage.organization;
 
 import java.security.InvalidParameterException;
 
+import com.ianmann.mind.Neuron;
+import com.ianmann.mind.storage.organization.basicNetwork.AttributeStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.Description;
+import com.ianmann.mind.storage.organization.basicNetwork.EntityInstance;
+import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
+
 public class NeuronType {
 
 private NeuronType(){/* Please don't instantiate. */}
@@ -16,6 +22,11 @@ private NeuronType(){/* Please don't instantiate. */}
 	 * This may include neurons such as height, weight, color. Description will
 	 * represent the actual value of an attribute such as tall, heavy, red.
 	 * </p>
+	 * <p>
+	 * This type will cause any Neuron of this type to be parsed as a
+	 * {@link AttributeStructure} network when the {@link Neuron#parsed()} is
+	 * called.
+	 * </p>
 	 */
 	public static final int ATTRIBUTE = 0;
 	
@@ -27,6 +38,11 @@ private NeuronType(){/* Please don't instantiate. */}
 	 * <p>
 	 * An example would be dog, cat, person, animal, being, etc...
 	 * They are made up of different attributes and abilities.
+	 * </p>
+	 * <p>
+	 * This type will cause any Neuron of this type to be parsed as a
+	 * {@link EntityStructure} network when the {@link Neuron#parsed()} is
+	 * called.
 	 * </p>
 	 */
 	public static final int NOUN_DEFINITION = 1;
@@ -42,18 +58,23 @@ private NeuronType(){/* Please don't instantiate. */}
 	 * Then a noun instance that corresponds to that could be a
 	 * specific person.
 	 * </p>
+	 * <p>
+	 * This type will cause any Neuron of this type to be parsed as a
+	 * {@link EntityInstance} network when the {@link Neuron#parsed()} is
+	 * called.
+	 * </p>
 	 */
 	public static final int NOUN_INSTANCE = 2;
-	
-	/**
-	 * Designates that this neuron represents a category which groups other neurons together.
-	 */
-	public static final int CATEGORY = 3;
 	
 	/**
 	 * <p>
 	 * Represents the actual value of an attribute. This may include neurons representing
 	 * red, tall, heavy, etc...
+	 * </p>
+	 * <p>
+	 * This type will cause any Neuron of this type to be parsed as a
+	 * {@link Description} network when the {@link Neuron#parsed()} is
+	 * called.
 	 * </p>
 	 */
 	public static final int DESCRIPTION = 4;
@@ -74,8 +95,6 @@ private NeuronType(){/* Please don't instantiate. */}
 			return "Noun Definition";
 		case NOUN_INSTANCE:
 			return "Noun Instance";
-		case CATEGORY:
-			return "Category";
 		default:
 			throw new InvalidParameterException(code + " is not a valid neruon type code.");
 		}

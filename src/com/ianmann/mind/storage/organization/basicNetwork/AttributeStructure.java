@@ -1,6 +1,5 @@
 package com.ianmann.mind.storage.organization.basicNetwork;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
@@ -8,17 +7,73 @@ import org.json.simple.parser.ParseException;
 
 import com.ianmann.mind.NeuralPathway;
 import com.ianmann.mind.Neuron;
-import com.ianmann.mind.core.navigation.Category;
-import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.storage.organization.NeuronType;
 
-public class AttributeStructure extends NeuralNetwork {
+public class AttributeStructure extends ExtendableNeuralNetwork {
 	
-	private ArrayList<File> possibilities = new ArrayList<File>();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * <p>
+	 * Provides the index in this {@link Neuron}'s axon at which the dendrite
+	 * group containing this {@link AttributeStructure}'s possibilities is
+	 * located.
+	 * </p>
+	 * <p>
+	 * The value of this is 1.
+	 * </p>
+	 */
+	private final static int PATH_TO_LIST_POSSIBILITIES_IN_ROOT = 1;
+	
+	/**
+	 * <p>
+	 * Loads an {@link AttributeStructure} into memory from a given file at
+	 * _path.
+	 * </p>
+	 * <p>
+	 * If _doLoadAttributes is true, then the actual data in the file will
+	 * be read into memory. Otherwise, in order to save memory, This instance
+	 * will simply have the path to the file loaded and no other data.
+	 * </p>
+	 * @param _path
+	 * @param _doLoadAttribute
+	 * @throws FileNotFoundException
+	 * @throws ParseException
+	 */
+	public AttributeStructure(String _path, boolean _doLoadAttributes) throws FileNotFoundException, ParseException {
+		super(_path, _doLoadAttributes);
+	}
 
-	public AttributeStructure(Neuron _root) {
-		super(_root);
-		this.sortNetwork();
+	/**
+	 * <p>
+	 * Wraps an already created {@link Neuron} in a parsed {@link AttributeStructure}
+	 * {@link NeuralNetwork}. This will provide getters that retreive expected
+	 * relationships from this {@link NeuralNetwork} and other {@link Neuron}s that
+	 * for this {@link AttributeStructure}.
+	 * </p>
+	 * <p>
+	 * This assumes that those relationships
+	 * are in the expected places on the root {@link Neuron}'s axon.
+	 * </p>
+	 * @param _root
+	 */
+	public AttributeStructure(String _path, String _label, AttributeStructure _parent) {
+		super(_path, NeuronType.ATTRIBUTE, _label, _parent);
+	}
+	
+	/**
+	 * <p>
+	 * Returns the list of {@link NeuralPathway}s that link to the {@link Neuron}s
+	 * that represent the possible {@link Description}s that can be used to fill this
+	 * {@link AttributeStructure}.
+	 * </p>
+	 * @return
+	 */
+	public ArrayList<NeuralPathway> getPossibilities() {
+		return this.getDendriteGroup(AttributeStructure.PATH_TO_LIST_POSSIBILITIES_IN_ROOT);
 	}
 	
 	/**
@@ -28,13 +83,11 @@ public class AttributeStructure extends NeuralNetwork {
 	 * @param _category
 	 * @return
 	 */
-	public static AttributeStructure create(AttributeStructure _parent, Category _category) {
-		Neuron neuron = new Neuron(NeuronType.ATTRIBUTE, EmotionUnit.NEUTRAL, _category);
-		neuron.save();
-		if (_parent != null) {
-			neuron.setParentNeuron(_parent.root);
-		}
-		return (AttributeStructure) neuron.parsed();
+	public static AttributeStructure create(AttributeStructure _parent) {
+		String filePath = Neuron.getNewFileLocation(null);
+		AttributeStructure structure = new AttributeStructure(filePath, null, _parent);
+		structure.save();
+		return structure;
 	}
 	
 	/**
@@ -44,48 +97,21 @@ public class AttributeStructure extends NeuralNetwork {
 	 * @param _category
 	 * @return
 	 */
-	public static AttributeStructure create(AttributeStructure _parent, Category _category, String _label) {
-		Neuron neuron = new Neuron(NeuronType.ATTRIBUTE, EmotionUnit.NEUTRAL, _label, _category);
-		neuron.save();
-		if (_parent != null) {
-			neuron.setParentNeuron(_parent.root);
-		}
-		return (AttributeStructure) neuron.parsed();
-	}
-	
-	public Description createDescription(Category _category, String _label) {
-		Description newDescription = Description.create(this, _category, _label);
-		return newDescription;
-	}
-	
-	public Description createDescription(Category _category) {
-		Description newDescription = Description.create(this, _category);
-		return newDescription;
+	public static AttributeStructure create(AttributeStructure _parent, String _label) {
+		String filePath = Neuron.getNewFileLocation(_label);
+		AttributeStructure structure = new AttributeStructure(filePath, _label, _parent);
+		structure.save();
+		return structure;
 	}
 	
 	public Description createDescription(String _label) {
-		Description newDescription = Description.create(this, this.root.getParentCategory(), _label);
+		Description newDescription = Description.create(this, _label);
 		return newDescription;
 	}
 	
 	public Description createDescription() {
-		Description newDescription = Description.create(this, this.root.getParentCategory());
+		Description newDescription = Description.create(this);
 		return newDescription;
-	}
-
-	/**
-	 * @Override
-	 * All neurons that are network roots of Description are added to this Attribute
-	 * Structures list of possibilities.
-	 */
-	public void sortNetwork() {
-		// TODO Auto-generated method stub
-		for (File synapseFile : this.root.getSynapticEndings()) {
-			Neuron current = NeuralPathway.deserialize(synapseFile).fireSynapse();
-			if (current.getType() == NeuronType.DESCRIPTION) {
-				this.possibilities.add(synapseFile);
-			}
-		}
 	}
 	
 	/**
@@ -94,10 +120,10 @@ public class AttributeStructure extends NeuralNetwork {
 	 * @param _descriptionNeuron
 	 * @return
 	 */
-	public boolean hasPossibility(Neuron _descriptionNeuron) {
+	public boolean hasPossibility(Description _descriptionNeuron) {
 		if (_descriptionNeuron.getType() == NeuronType.DESCRIPTION) {
-			for (int i = 0; i < this.possibilities.size(); i++) {
-				if (this.getPossibility(i).fireSynapse().location.equals(_descriptionNeuron.location)) {
+			for (NeuralPathway possibility : this.getPossibilities()) {
+				if (possibility.fireSynapse().equals(_descriptionNeuron)) {
 					return true;
 				}
 			}
@@ -106,13 +132,25 @@ public class AttributeStructure extends NeuralNetwork {
 	}
 	
 	/**
-	 * Return the NeuralPathway that contains the possibility at index in this
-	 * AttributeStructure objects list of possibilities.
-	 * @param index
+	 * <p>
+	 * Returns the index in this {@link AttributeStructure}s list of possibilities
+	 * at which the {@link Desctription} d is located.
+	 * </p>
+	 * <p>
+	 * If d is null or if d is not a possibility of this {@link AttributeStructure},
+	 * -1 is returned.
+	 * </p>
+	 * @param d
 	 * @return
 	 */
-	public NeuralPathway getPossibility(int index) {
-		return NeuralPathway.deserialize(this.possibilities.get(index));
+	public int getPossibilityIndex(Description d) {
+		if (d == null) { return -1; }
+		for (int i = 0; i < this.getPossibilities().size(); i++) {
+			if (this.getPossibilities().get(i).fireSynapse().equals(d)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 	/**
@@ -120,26 +158,21 @@ public class AttributeStructure extends NeuralNetwork {
 	 * Attribute Structure.
 	 * @param _n
 	 */
-	public void addPossibility(Neuron _n) {
-		if (_n.getType() == NeuronType.DESCRIPTION) {
-			NeuralPathway synapse = this.root.addNeuralPathway(_n);
-			this.possibilities.add(synapse.location);
-			_n.addNeuralPathway(this.root);
+	public void addPossibility(Description _n) {
+		if (!this.hasPossibility(_n)) {
+			this.addNeuralPathway(AttributeStructure.PATH_TO_LIST_POSSIBILITIES_IN_ROOT, _n);
 		}
 	}
 	
 	/**
-	 * Add _n as a file containing a Description neuron object to the
-	 * possibilities for this Attribute Structure.
+	 * Removes _n as a possibility of this {@link AttributeStructure}. If _n is not
+	 * a possibility for this, then nothing is done.
 	 * @param _n
 	 */
-	public void addPossibility(File _neuronFile) {
-		try {
-			Neuron neuron = Neuron.fromJSON(_neuronFile);
-			this.addPossibility(neuron);
-		} catch (FileNotFoundException | ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public void removePossibility(Description _n) {
+		int indexOfPossibility = this.getPossibilityIndex(_n);
+		if (indexOfPossibility >= 0) {
+			this.removeNeuralPathway(AttributeStructure.PATH_TO_LIST_POSSIBILITIES_IN_ROOT, indexOfPossibility);
 		}
 	}
 

@@ -1,30 +1,73 @@
 package com.ianmann.mind.storage.organization.basicNetwork;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.json.simple.parser.ParseException;
 
 import com.ianmann.mind.NeuralPathway;
 import com.ianmann.mind.Neuron;
-import com.ianmann.mind.core.Constants;
-import com.ianmann.mind.core.navigation.Category;
-import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.storage.organization.NeuronType;
 import com.ianmann.utils.utilities.GeneralUtils;
 
-public class EntityStructure extends NeuralNetwork {
+public class EntityStructure extends ExtendableNeuralNetwork {
 
 	/**
-	 * Any attribute that this entity possesses.
-	 * <br><br>
-	 * Examples may be eyes, color, age, name, etc...
-	 * <br><br>
-	 * Each file contains a thought link to a neuron
+	 * 
 	 */
-	private ArrayList<File> attributes = new ArrayList<File>();
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * <p>
+	 * Array of ints that point to, in the axon, where the
+	 * links to all {@link AttributeStructure}s that belong
+	 * to this {@link EntityInstance} are expected to be found.
+	 * </p>
+	 * <p>
+	 * Attributes:
+	 * <br>
+	 * Attributes in this dendrite group are any attribute that
+	 * can describe this {@link EntityStructure}.
+	 * </p>
+	 * <p>
+	 * Examples may be color, age, name, etc...
+	 * </p>
+	 */
+	private static final int PATH_TO_LIST_ATTRIBUTES = 1;
+	
+	/**
+	 * <p>
+	 * Array of ints that point to, in the axon, where the
+	 * links to all {@link EntityInstance}s that belong
+	 * to this {@link EntityInstance} are expected to be found.
+	 * </p>
+	 * <p>
+	 * Breakdown:<br>
+	 * Entity Instances in this dendrite group are any object that
+	 * combine to define this {@link EntityStructure}.
+	 * </p>
+	 * <p>
+	 * Examples may be leg, eyes, head, soul, etc...
+	 * </p>
+	 */
+	private static final int PATH_TO_LIST_BREAKDOWN = 2;
+	
+	/**
+	 * <p>
+	 * Wraps a neuron file in a {@link EntityStructure} object.
+	 * </p>
+	 * <p>
+	 * If _doLoadAttributes is true, then the actual data in the file will
+	 * be read into memory. Otherwise, in order to save memory, This instance
+	 * will simply have the path to the file loaded and no other data.
+	 * </p>
+	 * @param _path
+	 * @param _doLoadAttributes
+	 * @throws ParseException 
+	 * @throws FileNotFoundException 
+	 */
+	public EntityStructure(String _path, boolean _doLoadAttributes) throws FileNotFoundException, ParseException {
+		super(_path, _doLoadAttributes);
+	}
 	
 	/**
 	 * Instantiate an Entity Structure network. This contains multiple attributes and acts
@@ -35,9 +78,8 @@ public class EntityStructure extends NeuralNetwork {
 	 * definition.
 	 * @param _neuron
 	 */
-	public EntityStructure(Neuron _neuron) {
-		super(_neuron);
-		this.sortNetwork();
+	public EntityStructure(String _path, String _label, EntityStructure _parent) {
+		super(_path, NeuronType.NOUN_DEFINITION, _label, _parent);
 	}
 	
 	/**
@@ -47,13 +89,12 @@ public class EntityStructure extends NeuralNetwork {
 	 * @param _category
 	 * @return
 	 */
-	public static EntityStructure create(EntityStructure _parent, Category _category) {
-		Neuron toCreate = new Neuron(NeuronType.NOUN_DEFINITION, EmotionUnit.NEUTRAL, _category);
-		toCreate.save();
-		if (_parent != null) {
-			toCreate.setParentNeuron(_parent.root);
-		}
-		return (EntityStructure) toCreate.parsed();
+	public static EntityStructure create(EntityStructure _parent, String _label) {
+		String filePath = Neuron.getNewFileLocation(_label);
+		EntityStructure structure = new EntityStructure(filePath, _label, _parent);
+		
+		structure.save();
+		return structure;
 	}
 	
 	/**
@@ -63,54 +104,20 @@ public class EntityStructure extends NeuralNetwork {
 	 * @param _category
 	 * @return
 	 */
-	public static EntityStructure create(EntityStructure _parent, Category _category, String _label) {
-		Neuron toCreate = new Neuron(NeuronType.NOUN_DEFINITION, EmotionUnit.NEUTRAL, _label, _category);
-		toCreate.save();
-		if (_parent != null) {
-			toCreate.setParentNeuron(_parent.root);
-		}
-		return (EntityStructure) toCreate.parsed();
-	}
-	
-	public EntityInstance instantiateStructure(Category _category) {
-		return EntityInstance.create(this, _category);
-	}
-	
-	public EntityInstance instantiateStructure(Category _category, String _label) {
-		return EntityInstance.create(this, _category, _label);
-	}
-
-	/**
-	 * @Override
-	 * Noun definition neurons and Attributes will be put into this networks list of
-	 * attributes.
-	 */
-	protected void sortNetwork() {
-		this.attributes = new ArrayList<File>();
+	public static EntityStructure create(EntityStructure _parent) {
+		String filePath = Neuron.getNewFileLocation(null);
+		EntityStructure structure = new EntityStructure(filePath, null, _parent);
 		
-		for (File relatedNeuron : this.root.getSynapticEndings()) {
-			NeuralPathway currentPathway = NeuralPathway.deserialize(relatedNeuron);
-			Neuron current = currentPathway.fireSynapse();
-			if (current.getType() == NeuronType.NOUN_DEFINITION) {
-				this.attributes.add(relatedNeuron);
-			} else if (current.getType() == NeuronType.ATTRIBUTE) {
-				this.attributes.add(relatedNeuron);
-			}
-		}
+		structure.save();
+		return structure;
 	}
 	
-	/**
-	 * Returns an EntityStructure representing the parent network of this network. This uses
-	 * this networks root Neuron and retrieves the network corresponding to that Neuron's
-	 * parent Neuron.
-	 * @return
-	 */
-	public EntityStructure getParentNetwork() {
-		if (this.root.getParentNeuron() != null) {
-			return new EntityStructure(this.root.getParentNeuron());
-		} else {
-			return null;
-		}
+	public EntityInstance instantiateStructure() {
+		return EntityInstance.create(this);
+	}
+	
+	public EntityInstance instantiateStructure(String _label) {
+		return EntityInstance.create(this, _label);
 	}
 	
 	/**
@@ -121,7 +128,7 @@ public class EntityStructure extends NeuralNetwork {
 	 * @return
 	 */
 	public boolean isSubStructure(EntityStructure _parent) {
-		return this.attributes.containsAll(_parent.attributes);
+		return this.getAttributes().containsAll(_parent.getAttributes());
 	}
 	
 	/**
@@ -130,21 +137,14 @@ public class EntityStructure extends NeuralNetwork {
 	 * from its file.
 	 * @return
 	 */
-	public ArrayList<Neuron> getAttributes() {
-		ArrayList<Neuron> neurons = new ArrayList<Neuron>();
+	public ArrayList<NeuralPathway> getAttributes() {
+		ArrayList<NeuralPathway> allAttributes = this.getDendriteGroup(EntityStructure.PATH_TO_LIST_ATTRIBUTES);
 		
-		EntityStructure parentNetwork = this.getParentNetwork();
-		if (parentNetwork != null) {
-			for (Neuron neuron : parentNetwork.getAttributes()) {
-				neurons.add(neuron);
-			}
+		EntityStructure parent = (EntityStructure) this.getParentNeuron();
+		if (parent != null) {
+			allAttributes.addAll(parent.getAttributes());
 		}
-		
-		for (File pathwayFile : this.attributes) {
-			neurons.add(NeuralPathway.deserialize(pathwayFile).fireSynapse());
-		}
-		
-		return neurons;
+		return allAttributes;
 	}
 	
 	/**
@@ -154,13 +154,7 @@ public class EntityStructure extends NeuralNetwork {
 	 * @return
 	 */
 	public Neuron getAttribute(int index) {
-		try {
-			return Neuron.fromJSON(this.attributes.get(index));
-		} catch (FileNotFoundException | ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+		return this.getAttributes().get(index).fireSynapse();
 	}
 	
 	/**
@@ -169,39 +163,8 @@ public class EntityStructure extends NeuralNetwork {
 	 */
 	public void addAttribute(Neuron _n) {
 		if (_n.getType() == NeuronType.NOUN_DEFINITION || _n.getType() == NeuronType.ATTRIBUTE) {
-			NeuralPathway synapse = this.root.addNeuralPathway(_n);
-			this.sortNetwork();
+			this.addNeuralPathway(EntityStructure.PATH_TO_LIST_ATTRIBUTES, _n);
 		}
-	}
-	
-	/**
-	 * Adds the neuron _n to the network of attributes that this network is consisted of.
-	 * This method takes a file containing a neuron instead of a neuron object.
-	 * @param _n
-	 */
-	public void addAttribute(File _n) {
-		try {
-			Neuron neuron = Neuron.fromJSON(_n);
-			this.addAttribute(neuron);
-		} catch (FileNotFoundException | ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Determines whether or not this entity instance can be assigned an instance of _attribute.
-	 * It is assumed to be true if _attribute is contained in this EntityStructures list of attributes.
-	 * @param _attribute
-	 * @return
-	 */
-	public boolean hasAttribute(EntityStructure _attribute) {
-		for (Neuron neuron : this.getAttributes()) {
-			if (neuron.location.equals(_attribute.root.location)) {
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	/**
@@ -211,8 +174,8 @@ public class EntityStructure extends NeuralNetwork {
 	 * @return
 	 */
 	public boolean hasAttribute(AttributeStructure _attribute) {
-		for (Neuron neuron : this.getAttributes()) {
-			if (neuron.location.equals(_attribute.root.location)) {
+		for (NeuralPathway synapse : this.getAttributes()) {
+			if (synapse.fireSynapse().equals(_attribute)) {
 				return true;
 			}
 		}
@@ -221,13 +184,14 @@ public class EntityStructure extends NeuralNetwork {
 	
 	/**
 	 * Determines whether or not this entity instance can be assigned an instance of _attribute.
-	 * It is assumed to be true if _attribute is contained in this EntityStructures list of attributes.
+	 * It is assumed to be true if _attribute can be assigned to any {@link AttributeStructure}
+	 * that is contained in this EntityStructures list of Breakdowns.
 	 * @param _attribute
 	 * @return
 	 */
-	public boolean hasAttribute(Neuron _attribute) {
-		for (Neuron neuron : this.getAttributes()) {
-			if (neuron.location.equals(_attribute.location)) {
+	public boolean hasBreakdown(EntityStructure _attribute) {
+		for (NeuralPathway synapse : this.getBreakdowns()) {
+			if (synapse.fireSynapse().equals(_attribute)) {
 				return true;
 			}
 		}
@@ -235,19 +199,46 @@ public class EntityStructure extends NeuralNetwork {
 	}
 	
 	/**
-	 * Determines whether this neuron is the same as that in _entityStructure. This is true if
-	 * _entityStructure.root.location is the same file as this.root.location.
-	 * @param o
+	 * <p>
+	 * Return all Entity Structures that are contained in the dendrite group containing
+	 * the breakdown of this Structure.
+	 * </p>
+	 * <p>
+	 * Entity Instances in this dendrite group are any object that
+	 * combine to define this {@link EntityStructure}.
+	 * </p>
 	 * @return
 	 */
-	public boolean equals(EntityStructure _entityStructure) {
-		return this.asNeuron().equals(_entityStructure.asNeuron());
+	public ArrayList<NeuralPathway> getBreakdowns() {
+		ArrayList<NeuralPathway> allBreakdowns = this.getDendriteGroup(EntityStructure.PATH_TO_LIST_BREAKDOWN);
+		
+		EntityStructure parent = (EntityStructure) this.getParentNeuron();
+		if (parent != null) {
+			allBreakdowns.addAll(parent.getBreakdowns());
+		}
+		return allBreakdowns;
+	}
+	
+	/**
+	 * <p>
+	 * Adds an {@link EntityStructure} that will help combine with the others in the
+	 * dendrite group referenced by {@link EntityStructure#PATH_TO_LIST_BREAKDOWN} to
+	 * form the physical definition of this {@link EntityStructure}.
+	 * </p>
+	 * <p>
+	 * For example, if this {@link EntityStructure} represents Person, then one of
+	 * these breakdown {@link EntityStructure}s may be a definition for Leg or Arm.
+	 * </p>
+	 * @param _breakdown
+	 */
+	public void addBreakdown(EntityStructure _breakdown) {
+		this.addNeuralPathway(EntityStructure.PATH_TO_LIST_BREAKDOWN, _breakdown);
 	}
 	
 	public String toString() {
-		String str = "<EntityStructure: type(" + NeuronType.mapType(this.root.getType()) + ")";
-		if (!GeneralUtils.isNumeric(this.root.getAssociatedMorpheme())) {
-			str = str + ";label(" + this.root.getAssociatedMorpheme() + ")";
+		String str = "<EntityStructure: type(" + NeuronType.mapType(this.getType()) + ")";
+		if (!GeneralUtils.isNumeric(this.getAssociatedMorpheme())) {
+			str = str + ";label(" + this.getAssociatedMorpheme() + ")";
 		}
 		str = str + ">";
 		return str;

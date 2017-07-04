@@ -1,20 +1,10 @@
 package test.ianmann.mind;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-
 import org.json.simple.parser.ParseException;
 
-import com.ianmann.mind.Neuron;
-import com.ianmann.mind.Stimulant;
 import com.ianmann.mind.core.Constants;
-import com.ianmann.mind.core.navigation.Category;
-import com.ianmann.mind.emotions.EmotionUnit;
-import com.ianmann.mind.input.TextIdentification;
 import com.ianmann.mind.storage.ShortTermMemory;
-import com.ianmann.mind.storage.assimilation.Assimilation;
-import com.ianmann.mind.storage.assimilation.MorphemeNotFound;
 import com.ianmann.mind.storage.organization.basicNetwork.AttributeNotFoundException;
 import com.ianmann.mind.storage.organization.basicNetwork.AttributeStructure;
 import com.ianmann.mind.storage.organization.basicNetwork.Description;
@@ -27,66 +17,61 @@ public abstract class TestThoughtRelationships {
 		// TODO Auto-generated method stub
 		Constants.readStorageVariables();
 		ShortTermMemory.initialize();
-		TextIdentification.initialize();
 
 //		generatePersonNetwork();
-		generatePerson("Ian");
-		generatePerson("Wynton");
+//		generatePerson("Ian");
+//		generatePerson("Wynton");
 		
-//		Neuron person = Neuron.fromJSON(new File("mind/storage/neurons/being/person.nrn"));
-//		EntityStructure personStruct = new EntityStructure(person);
-//		System.out.println(personStruct.getAttributes());
-//		System.out.println(personStruct.getParentNetwork());
+		EntityInstance ian = new EntityInstance("person_Ian.nrn", true);
+		AttributeStructure height = new AttributeStructure("height.nrn", true);
+		Description fe = height.createDescription("five_eleven");
+		ian.addDescription(fe);
 	}
 	
 	public static void generatePersonNetwork() {
-		Category catBeing = new Category("being", null);
-		Category catBodyPart = new Category("body part", null);
-		Category identifier = new Category("identifier", null);
-		Category size = new Category("size", null);
 		
-		EntityStructure bodyPart = EntityStructure.create(null, catBodyPart, "body bart");
-		EntityStructure limb = EntityStructure.create(null, catBodyPart, "limb");
+		EntityStructure bodyPart = EntityStructure.create(null, "body_part");
+		EntityStructure limb = EntityStructure.create(bodyPart, "limb");
 		
-		EntityStructure leg = EntityStructure.create(null, catBodyPart, "leg");
-		EntityStructure arm = EntityStructure.create(null, catBodyPart, "arm");
+		EntityStructure leg = EntityStructure.create(limb, "leg");
+		EntityStructure arm = EntityStructure.create(limb, "arm");
 		
-		AttributeStructure name = AttributeStructure.create(null, identifier, "name");
-		AttributeStructure height = AttributeStructure.create(null, size, "height");
+		AttributeStructure name = AttributeStructure.create(null, "name");
+		AttributeStructure height = AttributeStructure.create(null, "height");
 		
-		EntityStructure being = EntityStructure.create(null, catBeing, "being");
-		being.addAttribute(name.asNeuron());
-		being.addAttribute(height.asNeuron());
+		EntityStructure being = EntityStructure.create(null, "being");
+		being.addAttribute(name);
+		being.addAttribute(height);
 		
-		EntityStructure person = EntityStructure.create(being, catBeing, "person");
-		person.addAttribute(leg.asNeuron());
-		person.addAttribute(arm.asNeuron());
+		EntityStructure person = EntityStructure.create(being, "person");
+		person.addBreakdown(leg);
+		person.addBreakdown(arm);
 	}
 	
 	public static void generatePerson(String _name) throws FileNotFoundException, ParseException, AttributeNotFoundException {
-		Neuron person = Neuron.fromJSON(new File("mind/storage/neurons/being/person.nrn"));
-		EntityStructure personStruct = new EntityStructure(person);
-		Neuron leg = Neuron.fromJSON(new File("mind/storage/neurons/body part/leg.nrn"));
-		EntityStructure legStruct = new EntityStructure(leg);
-		Neuron arm = Neuron.fromJSON(new File("mind/storage/neurons/body part/arm.nrn"));
-		EntityStructure armStruct = new EntityStructure(arm);
-		Neuron name = Neuron.fromJSON(new File("mind/storage/neurons/identifier/name.nrn"));
-		AttributeStructure nameStruct = new AttributeStructure(name);
+		EntityStructure personStruct = new EntityStructure("person.nrn", true);
 		
-		EntityInstance personInstance = personStruct.instantiateStructure(person.getParentCategory(), _name);
+		EntityStructure legStruct = new EntityStructure("leg.nrn", true);
+		EntityStructure armStruct = new EntityStructure("arm.nrn", true);
+		AttributeStructure nameStruct = new AttributeStructure("name.nrn", true);
 		
-		EntityInstance leftLeg = legStruct.instantiateStructure(leg.getParentCategory(), _name + "s_left_leg");
-		EntityInstance rightLeg = legStruct.instantiateStructure(leg.getParentCategory(), _name + "s_right_leg");
-		EntityInstance leftArm = armStruct.instantiateStructure(arm.getParentCategory(), _name + "s_left_arm");
-		EntityInstance rightArm = armStruct.instantiateStructure(arm.getParentCategory(), _name + "s_right_arm");
+		EntityInstance personInstance = personStruct.instantiateStructure("person_" + _name);
+		
+		EntityInstance leftLeg = legStruct.instantiateStructure(_name + "s_left_leg");
+		EntityInstance rightLeg = legStruct.instantiateStructure(_name + "s_right_leg");
+		EntityInstance leftArm = armStruct.instantiateStructure(_name + "s_left_arm");
+		EntityInstance rightArm = armStruct.instantiateStructure(_name + "s_right_arm");
 		
 		Description nameInstance = nameStruct.createDescription(_name);
 		
-		personInstance.addAttribute(rightArm);
-		personInstance.addAttribute(leftArm);
-		personInstance.addAttribute(rightLeg);
-		personInstance.addAttribute(leftLeg);
-		personInstance.addAttribute(nameInstance);
+		/*
+		 * The method for addBreakdownInstance is not saving the relationships.
+		 */
+		personInstance.addBreakdownInstance(rightArm);
+		personInstance.addBreakdownInstance(leftArm);
+		personInstance.addBreakdownInstance(rightLeg);
+		personInstance.addBreakdownInstance(leftLeg);
+		personInstance.addDescription(nameInstance);
 	}
 
 }

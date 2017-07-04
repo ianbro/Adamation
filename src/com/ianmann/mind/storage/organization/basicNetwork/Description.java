@@ -1,70 +1,56 @@
 package com.ianmann.mind.storage.organization.basicNetwork;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.json.simple.parser.ParseException;
 
-import com.ianmann.mind.NeuralPathway;
 import com.ianmann.mind.Neuron;
-import com.ianmann.mind.core.navigation.Category;
-import com.ianmann.mind.emotions.EmotionUnit;
 import com.ianmann.mind.storage.organization.NeuronType;
 
 public class Description extends NeuralNetwork {
 	
-	private File attributeStructureNeuralPathway;
-
-	public Description(Neuron _root) {
-		super(_root);
-		this.sortNetwork();
-	}
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * <p>
+	 * The path in the axon of this {@link NeuralNetwork}s root {@link Neuron}
+	 * pointing to where the root {@link Neuron} of the {@link AttributeStructure}
+	 * is expected to be found.
+	 * </p>
+	 * <p>
+	 * The value for this is {1,0}.
+	 * </p>
+	 */
+	public final static int[] PATH_TO_STRUCTURE = {1,0};
 	
-	public static Description create(AttributeStructure _definition, Category _category) {
-		Neuron neuron = new Neuron(NeuronType.DESCRIPTION, EmotionUnit.NEUTRAL, _category);
-		neuron.save();
-		Description desc = (Description) neuron.parsed();
-		desc.setStructure(_definition);
-		return desc;
-	}
-	
-	public static Description create(AttributeStructure _definition, Category _category, String _label) {
-		Neuron neuron = new Neuron(NeuronType.DESCRIPTION, EmotionUnit.NEUTRAL, _label, _category);
-		neuron.save();
-		Description desc = (Description) neuron.parsed();
-		desc.setStructure(_definition);
-		return desc;
+	/**
+	 * <p>
+	 * Wraps a neuron file in a {@link Description} object.
+	 * </p>
+	 * <p>
+	 * If _doLoadAttributes is true, then the actual data in the file will
+	 * be read into memory. Otherwise, in order to save memory, This instance
+	 * will simply have the path to the file loaded and no other data.
+	 * </p>
+	 * @param _path
+	 * @param _doLoadAttributes
+	 * @throws ParseException 
+	 * @throws FileNotFoundException 
+	 */
+	public Description(String _path, boolean _doLoadAttributes) throws FileNotFoundException, ParseException {
+		super(_path, _doLoadAttributes);
 	}
 
 	/**
-	 * @Override
-	 * Sets the attribute structure that this description fulfills.
+	 * Creates a {@link Description} object that is a possibility for the given
+	 * {@link AttributeStructure} and stored in a new file at the given _path.
+	 * @param _root
 	 */
-	public void sortNetwork() {
-		// TODO Auto-generated method stub
-		for (int i = 0; i < this.root.getSynapticEndings().size(); i ++) {
-			NeuralPathway currentPathway = NeuralPathway.deserialize(this.root.getSynapticEndings().get(i));
-			Neuron current = currentPathway.fireSynapse();
-			if (current.getType() == NeuronType.ATTRIBUTE) {
-				if (((AttributeStructure) current.parsed()).hasPossibility(this.root)) {
-					this.attributeStructureNeuralPathway = currentPathway.location;
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Sets the attribute Structure that this description fulfills. If this description already has a structure,
-	 * it is cleared and removed from this neuron's relationships.
-	 * @param _structure
-	 */
-	public void setStructure(AttributeStructure _structure) {
-		if (this.attributeStructureNeuralPathway != null) {
-			this.root.removeNeuralPathway(NeuralPathway.deserialize(this.attributeStructureNeuralPathway).fireSynapse());
-		}
-		NeuralPathway newPathWay = this.root.addNeuralPathway(_structure.root);
-		this.attributeStructureNeuralPathway = newPathWay.location;
-		_structure.addPossibility(this.root);
+	public Description(String _path, AttributeStructure _attribute, String _label) {
+		super(_path, NeuronType.DESCRIPTION, _label);
+		this.setStructure(_attribute);
 	}
 	
 	/**
@@ -72,7 +58,38 @@ public class Description extends NeuralNetwork {
 	 * @return
 	 */
 	public AttributeStructure getStructure() {
-		return ((AttributeStructure) NeuralPathway.deserialize(this.attributeStructureNeuralPathway).fireSynapse().parsed());
+		return (AttributeStructure) this.getNeuralPathway(
+				Description.PATH_TO_STRUCTURE[0],
+				Description.PATH_TO_STRUCTURE[1]
+		).fireSynapse();
+	}
+	
+	public static Description create(AttributeStructure _definition) {
+		String filePath = Neuron.getNewFileLocation(null);
+		Description desc = new Description(filePath, _definition, null);
+		desc.save();
+		return desc;
+	}
+	
+	public static Description create(AttributeStructure _definition, String _label) {
+		String filePath = Neuron.getNewFileLocation(_label);
+		Description desc = new Description(filePath, _definition, _label);
+		desc.save();
+		return desc;
+	}
+	
+	/**
+	 * Sets the attribute Structure that this description fulfills. If this description already has a structure,
+	 * it is cleared and removed from this neuron's relationships, then replaced with _structure.
+	 * @param _structure
+	 */
+	public void setStructure(AttributeStructure _structure) {
+		AttributeStructure attribute = (AttributeStructure) this.removeNeuralPathway(Description.PATH_TO_STRUCTURE[0], Description.PATH_TO_STRUCTURE[1]);
+		if (attribute != null) {
+			attribute.removePossibility(this);
+		}
+		this.addNeuralPathway(Description.PATH_TO_STRUCTURE[0], Description.PATH_TO_STRUCTURE[1], _structure);
+		_structure.addPossibility(this);
 	}
 
 }

@@ -8,7 +8,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import com.ianmann.mind.Neuron;
-import com.ianmann.mind.core.navigation.Category;
 import com.ianmann.utils.utilities.Files;
 
 public abstract class Constants {
@@ -39,6 +38,7 @@ public abstract class Constants {
 	 * @throws FileNotFoundException
 	 * @throws ParseException
 	 */
+	@SuppressWarnings("unchecked")
 	public static void readStorageVariables() throws FileNotFoundException, ParseException {
 		JSONObject jsonConstants = (JSONObject) Files.json(Constants.constantsFile);
 		Constants.STORAGE_ROOT = (String) ((JSONObject) jsonConstants.get("STORAGE")).get("ROOT");
@@ -50,11 +50,6 @@ public abstract class Constants {
 		Constants.SHORT_TERM_MEM_LOCATIONS = (HashMap<String, Integer>) ((JSONObject) jsonConstants.get("MEMORY_LOCATIONS")).get("INPUT_ADDRESSES");
 		Constants.PATH_TO_CATEGORIES_FOLDER = Constants.CORE_ROOT + "categories/";
 		Constants.PATH_TO_LANGUAGE_FOLDER = Constants.CORE_ROOT + "language/";
-	}
-	
-	public static void setConstantCategories() throws FileNotFoundException, ParseException {
-		Category.LANGUAGE = (Category) Category.parse(new File(Constants.PATH_TO_CATEGORIES_FOLDER + "language.ctgry"));
-		Category.PATTERN = (Category) Category.parse(new File(Constants.PATH_TO_CATEGORIES_FOLDER + "pattern.ctgry"));
 	}
 	
 	public static String getLanguageFolderSpecific(Neuron _languageNeuron) {

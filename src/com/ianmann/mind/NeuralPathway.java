@@ -20,6 +20,11 @@ import com.ianmann.utils.utilities.JSONUtils;
 public class NeuralPathway extends File {
 	
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Contains CRUD operations for the NeuralPathway class. This class
 	 * implements the interface {@link StorageManageable}.
 	 */
@@ -42,6 +47,95 @@ public class NeuralPathway extends File {
 	 * thought link and calls {@link this.FireSynapse()}.
 	 */
 	private Neuron recieverNeuron;
+	
+	/**
+	 * Signifies whether or not this {@link NeuralPathway} has been loaded
+	 * into the programs memory.
+	 */
+	private boolean loaded = false;
+	
+	public static class NeuralPathwayManager implements StorageManageable<NeuralPathway> {
+
+		/**
+		 * <p>
+		 * Creates a new NeuralPathway to the given Neuron.
+		 * </p>
+		 * <p>
+		 * This method expects one parameter: the Neuron object to connect to.
+		 * </p>
+		 * @see com.ianmann.utils.storage.StorageManageable#create(java.lang.Object[])
+		 */
+		@Override
+		public NeuralPathway create(Object... _params) {
+			String location = NeuralPathway.getNewFileLocation();
+			NeuralPathway dendrite = new NeuralPathway(location, (Neuron) _params[0]);
+			return dendrite;
+		}
+
+		/**
+		 * <p>
+		 * Print this object to the file at this objects file path.
+		 * </p>
+		 * <p>
+		 * If the pathway file already exists, just rewrite the data
+		 * in the file, overwriting the old data with the new data.
+		 * </p>
+		 * @see com.ianmann.utils.storage.StorageManageable#save(java.lang.Object)
+		 */
+		@Override
+		public void save(NeuralPathway _object) {
+			try {
+				try {
+					if (!_object.exists()) {
+						java.nio.file.Files.createFile(_object.toPath());
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				PrintWriter objWriter = new PrintWriter(_object);
+				objWriter.print(JSONUtils.formatJSON(_object.jsonify(), 0));
+				objWriter.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		/**
+		 * Removes the file that contains this NeuralPathway.
+		 * 
+		 * NOTE: This method calls the delete method on _object.
+		 * @see com.ianmann.utils.storage.StorageManageable#delete(java.lang.Object)
+		 */
+		@Override
+		public boolean delete(NeuralPathway _object) {
+			// TODO Auto-generated method stub
+			return _object.delete();
+		}
+
+		/**
+		 * DON'T USE THIS!
+		 * @see com.ianmann.utils.storage.StorageManageable#get(java.util.HashMap)
+		 */
+		@Override
+		public ArrayList<NeuralPathway> get(HashMap<String, Object> _params) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		/**
+		 * DON'T USE THIS!
+		 * @see com.ianmann.utils.storage.StorageManageable#getAll()
+		 */
+		@Override
+		public ArrayList<NeuralPathway> getAll() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}
 	
 	/**
 	 * Comparator object for comparing two NeuralPathway objects. This allows arrays of NeuralPathway
@@ -74,8 +168,8 @@ public class NeuralPathway extends File {
 	 * @throws ParseException 
 	 * @throws FileNotFoundException 
 	 */
-	protected NeuralPathway(String _path, boolean _doLoadAttributes) throws FileNotFoundException, ParseException {
-		super(_path);
+	protected NeuralPathway(String _pathFromPathwayRoot, boolean _doLoadAttributes) throws FileNotFoundException, ParseException {
+		super(Constants.PATHWAY_ROOT + _pathFromPathwayRoot);
 		if (_doLoadAttributes) {
 			this.loadAttributes();
 		}
@@ -100,6 +194,7 @@ public class NeuralPathway extends File {
 		this.recieverNeuron = _resultThoughtFile;
 		this.connectionSize = 0.00001;
 		this.save();
+		this.loaded = true;
 	}
 	
 	/**
@@ -132,12 +227,22 @@ public class NeuralPathway extends File {
 	 * This method calls the loadAttributes method on the Neuron
 	 * before returning it.
 	 * </p>
+	 * <p>
+	 * TODO: When instantiating the neuron, It must be instantiated
+	 * as the subclass of Neuron designated by the neurons type.
+	 * This is because once you get an instance of a super class,
+	 * you can't downcast to the subclass of the neuron type. I
+	 * have run into issues with this. So we need to read the type
+	 * of neuron from the file itself and, based on that type,
+	 * instantiate the corresponding {@link NeuralNetwork} subclass.
+	 * </p>
 	 * @see com.ianmann.mind.Neuron#loadAttributes()
 	 * @return The neuron that this NeuralPathway links to.
 	 */
 	private Neuron getNeuronFromFile() {
 		try {
-			this.recieverNeuron.loadAttributes();
+			this.loadAttributesIfNotYet();
+			this.recieverNeuron.loadAttributesIfNotYet();
 			return this.recieverNeuron;
 		} catch (FileNotFoundException | ParseException e) {
 			// TODO Auto-generated catch block
@@ -153,9 +258,16 @@ public class NeuralPathway extends File {
 	 * @return
 	 */
 	public Neuron fireSynapse() {
-		this.connectionSize += NeuralPathway.INCREMENTATION_STEP;
-		this.save();
-		return this.getNeuronFromFile();
+		try {
+			this.loadAttributesIfNotYet();
+			this.connectionSize += NeuralPathway.INCREMENTATION_STEP;
+			this.save();
+			return this.getNeuronFromFile();
+		} catch (FileNotFoundException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**
@@ -178,12 +290,14 @@ public class NeuralPathway extends File {
 	 * @return
 	 */
 	protected String getPathFromPathwayRoot() {
-		return this.getAbsolutePath().split(Constants.PATHWAY_ROOT)[1];
+		return this.getAbsolutePathForwardSlash().split(Constants.PATHWAY_ROOT)[1];
 	}
 	
 	/**
 	 * <p>
 	 * Parse json data in this NeuralPathways file into this objects attributes.
+	 * This will overwrite any changes that have been made to this object that
+	 * have not been saved via {@link NeuralPathway#save()}.
 	 * </p>
 	 * @throws FileNotFoundException
 	 * @throws ParseException
@@ -193,7 +307,22 @@ public class NeuralPathway extends File {
 		
 		this.connectionSize = (double) jsonNeuralPathway.get("connectionSize");
 		
-		this.recieverNeuron = new Neuron((String) jsonNeuralPathway.get("recieverNeuron"), false);
+		this.recieverNeuron = Neuron.networkFromNeuronFile((String) jsonNeuralPathway.get("recieverNeuron"), false);
+		
+		this.loaded = true;
+	}
+	
+	/**
+	 * Ensures that this {@link NeuralPathway} has been loaded into memory via
+	 * {@link NeuralPathway#loadAttributes()}. If it hasn't been, this will
+	 * call that method.
+	 * @throws FileNotFoundException
+	 * @throws ParseException
+	 */
+	public void loadAttributesIfNotYet() throws FileNotFoundException, ParseException {
+		if (!this.loaded) {
+			this.loadAttributes();
+		}
 	}
 	
 	/**
@@ -201,6 +330,7 @@ public class NeuralPathway extends File {
 	 * of NeuralPathway.
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	protected JSONObject jsonify() {
 		JSONObject jsonNeuralPathway = new JSONObject();
 		
@@ -210,87 +340,12 @@ public class NeuralPathway extends File {
 		
 		return jsonNeuralPathway;
 	}
-}
-
-class NeuralPathwayManager implements StorageManageable<NeuralPathway> {
-
-	/**
-	 * <p>
-	 * Creates a new NeuralPathway to the given Neuron.
-	 * </p>
-	 * <p>
-	 * This method expects one parameter: the Neuron object to connect to.
-	 * </p>
-	 * @see com.ianmann.utils.storage.StorageManageable#create(java.lang.Object[])
-	 */
-	@Override
-	public NeuralPathway create(Object... _params) {
-		String location = NeuralPathway.getNewFileLocation();
-		NeuralPathway dendrite = new NeuralPathway(location, (Neuron) _params[0]);
-		return dendrite;
-	}
-
-	/**
-	 * <p>
-	 * Print this object to the file at this objects file path.
-	 * </p>
-	 * <p>
-	 * If the pathway file already exists, just rewrite the data
-	 * in the file, overwriting the old data with the new data.
-	 * </p>
-	 * @see com.ianmann.utils.storage.StorageManageable#save(java.lang.Object)
-	 */
-	@Override
-	public void save(NeuralPathway _object) {
-		try {
-			try {
-				if (!_object.exists()) {
-					java.nio.file.Files.createFile(_object.toPath());
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			PrintWriter objWriter = new PrintWriter(_object);
-			objWriter.print(JSONUtils.formatJSON(_object.jsonify(), 0));
-			objWriter.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Removes the file that contains this NeuralPathway.
-	 * 
-	 * NOTE: This method calls the delete method on _object.
-	 * @see com.ianmann.utils.storage.StorageManageable#delete(java.lang.Object)
-	 */
-	@Override
-	public boolean delete(NeuralPathway _object) {
-		// TODO Auto-generated method stub
-		return _object.delete();
-	}
-
-	/**
-	 * DON'T USE THIS!
-	 * @see com.ianmann.utils.storage.StorageManageable#get(java.util.HashMap)
-	 */
-	@Override
-	public ArrayList<NeuralPathway> get(HashMap<String, Object> _params) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * DON'T USE THIS!
-	 * @see com.ianmann.utils.storage.StorageManageable#getAll()
-	 */
-	@Override
-	public ArrayList<NeuralPathway> getAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
+	/**
+	 * Returns the absolute path to this {@link NeuralPathway}s file but with forward slashes.
+	 * @return
+	 */
+	public String getAbsolutePathForwardSlash() {
+		return this.getAbsolutePath().replaceAll("\\\\", "/");
+	}
 }

@@ -1,4 +1,4 @@
-package com.ianmann.mind.storage.organization.basicNetwork;
+package com.ianmann.mind.storage.organization.basicNetwork.entity;
 
 import com.ianmann.mind.Neuron;
 

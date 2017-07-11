@@ -3,10 +3,10 @@ package com.ianmann.mind.storage.organization;
 import java.security.InvalidParameterException;
 
 import com.ianmann.mind.Neuron;
-import com.ianmann.mind.storage.organization.basicNetwork.AttributeStructure;
-import com.ianmann.mind.storage.organization.basicNetwork.Description;
-import com.ianmann.mind.storage.organization.basicNetwork.EntityInstance;
-import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.AttributeStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.Description;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.EntityInstance;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.EntityStructure;
 
 public class NeuronType {
 
@@ -24,8 +24,8 @@ private NeuronType(){/* Please don't instantiate. */}
 	 * </p>
 	 * <p>
 	 * This type will cause any Neuron of this type to be parsed as a
-	 * {@link AttributeStructure} network when the {@link Neuron#parsed()} is
-	 * called.
+	 * {@link AttributeStructure} network when the {@link Neuron} is
+	 * instantiated.
 	 * </p>
 	 */
 	public static final int ATTRIBUTE = 0;
@@ -41,8 +41,8 @@ private NeuronType(){/* Please don't instantiate. */}
 	 * </p>
 	 * <p>
 	 * This type will cause any Neuron of this type to be parsed as a
-	 * {@link EntityStructure} network when the {@link Neuron#parsed()} is
-	 * called.
+	 * {@link EntityStructure} network when the {@link Neuron} is
+	 * instantiated.
 	 * </p>
 	 */
 	public static final int NOUN_DEFINITION = 1;
@@ -60,8 +60,8 @@ private NeuronType(){/* Please don't instantiate. */}
 	 * </p>
 	 * <p>
 	 * This type will cause any Neuron of this type to be parsed as a
-	 * {@link EntityInstance} network when the {@link Neuron#parsed()} is
-	 * called.
+	 * {@link EntityInstance} network when the {@link Neuron} is
+	 * instantiated.
 	 * </p>
 	 */
 	public static final int NOUN_INSTANCE = 2;
@@ -73,19 +73,32 @@ private NeuronType(){/* Please don't instantiate. */}
 	 * </p>
 	 * <p>
 	 * This type will cause any Neuron of this type to be parsed as a
-	 * {@link Description} network when the {@link Neuron#parsed()} is
-	 * called.
+	 * {@link Description} network when the {@link Neuron} is
+	 * instantiated.
 	 * </p>
 	 */
 	public static final int DESCRIPTION = 4;
 	
 	/**
 	 * <p>
-	 * Designates that this neuron will contain the information representing a pattern
-	 * and how the pattern will be evealuated.
+	 * Designates that this {@link Neuron} is a container for a given state of an
+	 * {@link EntityInstance}.
+	 * </p>
+	 * <p>
+	 * This type will cause any Neuron of this type to be parsed as a
+	 * {@link State} network when the {@link Neuron} is
+	 * instantiated.
 	 * </p>
 	 */
-	public static final int PATTERN_PROCESSOR = 5;
+	public static final int STATE = 5;
+	
+	/**
+	 * <p>
+	 * Designates that this neuron will contain the information representing a pattern
+	 * and how the pattern will be evaluated.
+	 * </p>
+	 */
+	public static final int PATTERN_PROCESSOR = 6;
 	
 	public static String mapType(int code) {
 		switch(code) {
@@ -95,6 +108,8 @@ private NeuronType(){/* Please don't instantiate. */}
 			return "Noun Definition";
 		case NOUN_INSTANCE:
 			return "Noun Instance";
+		case STATE:
+			return "State";
 		default:
 			throw new InvalidParameterException(code + " is not a valid neruon type code.");
 		}

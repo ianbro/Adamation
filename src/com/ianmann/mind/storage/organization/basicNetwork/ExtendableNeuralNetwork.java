@@ -12,6 +12,7 @@ import org.json.simple.parser.ParseException;
 
 import com.ianmann.mind.NeuralPathway;
 import com.ianmann.mind.Neuron;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.EntityStructure;
 
 /**
  * <p>

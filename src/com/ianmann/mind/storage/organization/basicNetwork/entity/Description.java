@@ -1,4 +1,4 @@
-package com.ianmann.mind.storage.organization.basicNetwork;
+package com.ianmann.mind.storage.organization.basicNetwork.entity;
 
 import java.io.FileNotFoundException;
 
@@ -6,6 +6,7 @@ import org.json.simple.parser.ParseException;
 
 import com.ianmann.mind.Neuron;
 import com.ianmann.mind.storage.organization.NeuronType;
+import com.ianmann.mind.storage.organization.basicNetwork.NeuralNetwork;
 
 public class Description extends NeuralNetwork {
 	

@@ -16,9 +16,9 @@ import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.exceptions.FileNotDeletedError;
 import com.ianmann.mind.exceptions.NeuralNetworkTypeNotFoundError;
 import com.ianmann.mind.storage.organization.NeuronType;
-import com.ianmann.mind.storage.organization.basicNetwork.AttributeStructure;
-import com.ianmann.mind.storage.organization.basicNetwork.Description;
-import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.AttributeStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.Description;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.EntityStructure;
 import com.ianmann.utils.storage.StorageManageable;
 import com.ianmann.utils.utilities.Files;
 import com.ianmann.utils.utilities.GeneralUtils;
@@ -394,8 +394,8 @@ public class Neuron extends File {
 	/**
 	 * Returns the list of dendrites at the given index in {@code this.axon}.
 	 * @param _dendriteGroup
-	 * @return The ArrayList<{@link NeuralPathway}> of dendrites or null if
-	 * it doesn't exist.
+	 * @return The {@link ArrayList<NeuralPathway>} of dendrites or a blank
+	 * {@link ArrayList<NeuralPathway>} if it doesn't exist.
 	 */
 	public ArrayList<NeuralPathway> getDendriteGroup(int _dendriteGroup) {
 		try {
@@ -559,6 +559,15 @@ public class Neuron extends File {
 		this.loaded = true;
 	}
 	
+	/**
+	 * <p>
+	 * Wraps a File that represents a {@link Neuron} in the correct {@link NeuralNetwork}
+	 * type according to the "type" key in the Files JSON.
+	 * </p>
+	 * @param _path
+	 * @param _doLoadAttributes
+	 * @return
+	 */
 	public static Neuron networkFromNeuronFile(String _path, boolean _doLoadAttributes) {
 
 		try {
@@ -648,11 +657,15 @@ public class Neuron extends File {
 	}
 	
 	public String toString() {
-		String str = "<Neuron: type(" + NeuronType.mapType(this.type) + ")";
-		if (!GeneralUtils.isNumeric(this.associatedMorpheme)) {
-			str = str + ";label(" + this.associatedMorpheme + ")";
+		if (this.loaded) {
+			String str = "<Neuron: location(" + this.getName().replace(".nrn", "") + ";type(" + NeuronType.mapType(this.type) + ")";
+			if (!GeneralUtils.isNumeric(this.associatedMorpheme)) {
+				str = str + ";label(" + this.associatedMorpheme + ")";
+			}
+			str = str + ">";
+			return str;
+		} else {
+			return "<Neuron: location(" + this.getName().replace(".nrn", "") + ");[NOT LOADED]>";
 		}
-		str = str + ">";
-		return str;
 	}
 }

@@ -5,13 +5,13 @@ import org.json.simple.parser.ParseException;
 
 import com.ianmann.mind.core.Constants;
 import com.ianmann.mind.storage.ShortTermMemory;
-import com.ianmann.mind.storage.organization.basicNetwork.AttributeNotFoundException;
-import com.ianmann.mind.storage.organization.basicNetwork.AttributeStructure;
-import com.ianmann.mind.storage.organization.basicNetwork.Description;
-import com.ianmann.mind.storage.organization.basicNetwork.EntityInstance;
-import com.ianmann.mind.storage.organization.basicNetwork.EntityStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.AttributeNotFoundException;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.AttributeStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.Description;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.EntityInstance;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.EntityStructure;
 
-public abstract class TestThoughtRelationships {
+public abstract class TestNounsAndAttributes {
 
 	public static void main(String[] args) throws FileNotFoundException, ParseException, AttributeNotFoundException {
 		// TODO Auto-generated method stub

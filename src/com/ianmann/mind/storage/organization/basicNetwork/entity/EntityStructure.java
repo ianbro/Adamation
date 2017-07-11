@@ -1,4 +1,4 @@
-package com.ianmann.mind.storage.organization.basicNetwork;
+package com.ianmann.mind.storage.organization.basicNetwork.entity;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -7,6 +7,7 @@ import org.json.simple.parser.ParseException;
 import com.ianmann.mind.NeuralPathway;
 import com.ianmann.mind.Neuron;
 import com.ianmann.mind.storage.organization.NeuronType;
+import com.ianmann.mind.storage.organization.basicNetwork.ExtendableNeuralNetwork;
 import com.ianmann.utils.utilities.GeneralUtils;
 
 public class EntityStructure extends ExtendableNeuralNetwork {

@@ -348,4 +348,12 @@ public class NeuralPathway extends File {
 	public String getAbsolutePathForwardSlash() {
 		return this.getAbsolutePath().replaceAll("\\\\", "/");
 	}
+	
+	public String toString() {
+		if (this.loaded) {
+			return "<NeuralPathway: location(" + this.getName().replace(".tlink", "") + "): => Neuron(" + this.recieverNeuron.toString() + ")>";
+		} else {
+			return "<NeuralPathway: location(" + this.getName().replace(".tlink", "") + "): => Neuron([NOT LOADED])>";
+		}
+	}
 }

@@ -83,6 +83,15 @@ public class EntityInstance extends NeuralNetwork {
 	/**
 	 * <p>
 	 * Array of ints that point to, in the axon, where the
+	 * link to the {@link EntityInstance} for which this {@link EntityInstance}
+	 * is a breakdown {@link EntityInstance}.
+	 * </p>
+	 */
+	private static final int[] PATH_TO_PARENT_ENTITY_INSTANCE = {4,0};
+	
+	/**
+	 * <p>
+	 * int that points to, in the axon, where the
 	 * links to all {@link EntityInstance}s that belong
 	 * to this {@link EntityInstance} are expected to be found.
 	 * </p>
@@ -100,27 +109,17 @@ public class EntityInstance extends NeuralNetwork {
 	 * NOTE: These are not defined by this {@link EntityInstance}s structure.
 	 * </p>
 	 */
-	private static final int PATH_TO_LIST_POSSESSIONS = 4;
+	private static final int PATH_TO_LIST_POSSESSIONS = 5;
 	
 	/**
 	 * <p>
-	 * Points to that {@link State} that this was attached to at
-	 * the time this {@link EntityInstance} was known.
-	 * </p>
-	 * <p>
-	 * NOTE: Not all {@link EntityInstance}s have a {@link State} connection.
-	 * Some are {@link EntityInstances} that represent the overall knowledge
-	 * of an entity and therefore don't necessarily have a time in history
-	 * at which they were discovered. These {@link Neuron}s represent the
-	 * root knowledge of an entity and all {@link EntityInstance}s that do
-	 * link to a {@link State} link to these root {@link EntityInstance}s.
-	 * </p>
-	 * <p>
-	 * See documentation on {@link EntityInstance#PATH_TO_TIMELINE} for when
-	 * to use this path and when to use {@link EntityInstance#PATH_TO_TIMELINE}.
+	 * Path to the dendrite group of {@link EntityInstance}s to which this
+	 * {@link EntityInstance} belongs. {@link EntityInstance}s in this list
+	 * can be assumed to have this {@link EntityInstance} linked in their
+	 * list of possessions.
 	 * </p>
 	 */
-	private static final int[] PATH_TO_CONTAINER_STATE = {5,0};
+	private static final int PATH_TO_LIST_OWNERS = 6;
 	
 	/**
 	 * <p>
@@ -141,7 +140,10 @@ public class EntityInstance extends NeuralNetwork {
 	 * this is the subject.
 	 * </p>
 	 */
-	private static final int PATH_TO_TIMELINE = 6;
+	private static final int PATH_TO_TIMELINE = 7;
+	
+	
+	
 	
 	/**
 	 * <p>
@@ -158,6 +160,19 @@ public class EntityInstance extends NeuralNetwork {
 	 */
 	public EntityInstance(String _path, boolean _doLoadAttributes) throws FileNotFoundException, ParseException {
 		super(_path, _doLoadAttributes);
+	}
+	
+	/**
+	 * Creates a new {@link EntityInstance} that will be defined by the given
+	 * _structure. It will also take on the given _type. This is used for
+	 * neuron classes that extend {@link EntityInstance}.
+	 * @param _path
+	 * @param _label
+	 * @param _structure
+	 */
+	public EntityInstance(String _path, int _type, String _label, EntityStructure _structure) {
+		super(_path, _type, _label);
+		this.setStructure(_structure);
 	}
 	
 	/**
@@ -186,6 +201,9 @@ public class EntityInstance extends NeuralNetwork {
 		return instance;
 	}
 	
+	
+	
+	
 	/**
 	 * Return the parent structure of which this entity instance is an instance.
 	 * @return
@@ -208,6 +226,9 @@ public class EntityInstance extends NeuralNetwork {
 		this.addNeuralPathway(EntityInstance.PATH_TO_STRUCTURE[0], EntityInstance.PATH_TO_STRUCTURE[1], _structure);
 	}
 	
+	
+	
+	
 	/**
 	 * Sets _attribute to relate to this EntityInstances root Neuron. If _attribute's structure is not found an
 	 * attribute of this instances structure (contained in the structure's network), then an {@link AttributeNotFoundException}
@@ -220,12 +241,7 @@ public class EntityInstance extends NeuralNetwork {
 			throw new AttributeNotFoundException(_breakdownInstance.getStructure());
 		} else {
 			this.addNeuralPathway(EntityInstance.PATH_TO_LIST_BREAKDOWN_INSTANCES, _breakdownInstance);
-			NeuralPathway pathToState = this.getContainerState();
-			if (pathToState != null) {
-				State state = (State) pathToState.fireSynapse();
-				EntityInstance subjectsRoot = (EntityInstance) state.getSubjectsRoot().fireSynapse();
-				subjectsRoot.addBreakdownInstance(_breakdownInstance);
-			}
+			_breakdownInstance.setParentEntityInstance(this);
 		}
 	}
 	
@@ -263,9 +279,45 @@ public class EntityInstance extends NeuralNetwork {
 	}
 	
 	/**
+	 * Sets the parent {@link EntityInstance} for which this {@link EntityInstance} is
+	 * a breakdown of.
+	 * @param _parentEntityInstance
+	 * @return
+	 */
+	public NeuralPathway setParentEntityInstance(EntityInstance _parentEntityInstance) {
+		NeuralPathway link = this.addNeuralPathway(
+			EntityInstance.PATH_TO_PARENT_ENTITY_INSTANCE[0],
+			EntityInstance.PATH_TO_PARENT_ENTITY_INSTANCE[1],
+			_parentEntityInstance
+		);
+		return link;
+	}
+	
+	/**
+	 * Gets the parent {@link EntityInstance} for which this {@link EntityInstance} is
+	 * a breakdown of.
+	 * @return
+	 */
+	public NeuralPathway getParentEntityInstance() {
+		NeuralPathway link = this.getNeuralPathway(
+			EntityInstance.PATH_TO_PARENT_ENTITY_INSTANCE[0],
+			EntityInstance.PATH_TO_PARENT_ENTITY_INSTANCE[1]
+		);
+		return link;
+	}
+	
+	
+	
+	
+	/**
+	 * <p>
+	 * TODO: Implement examples of {@link Description} and add this {@link EntityInstance} as an example of it.
+	 * </p>
+	 * <p>
 	 * Sets _description to relate to this EntityInstances root Neuron. If _description's structure is not found an
 	 * attribute of this instances structure (contained in the structure's network), then an {@link AttributeNotFoundException}
 	 * is thrown.
+	 * </p>
 	 * @param _description
 	 * @throws AttributeNotFoundException - if _description's structure is not found an
 	 * attribute of this instances structure
@@ -275,12 +327,6 @@ public class EntityInstance extends NeuralNetwork {
 			throw new AttributeNotFoundException(_description.getStructure());
 		} else {
 			this.addNeuralPathway(EntityInstance.PATH_TO_LIST_DESCRIPTIONS, _description);
-			NeuralPathway pathToState = this.getContainerState();
-			if (pathToState != null) {
-				State state = (State) pathToState.fireSynapse();
-				EntityInstance subjectsRoot = (EntityInstance) state.getSubjectsRoot().fireSynapse();
-				subjectsRoot.addDescription(_description);
-			}
 		}
 	}
 	
@@ -308,6 +354,9 @@ public class EntityInstance extends NeuralNetwork {
 		return descriptions;
 	}
 	
+	
+	
+	
 	/**
 	 * Returns all links to {@link EntityInstance}s that are possessed by this {@link EntityInstance} that are defined
 	 * by _wantedType. An {@link EntityInstance} is said to be defined by a {@link EntityStructure} if that structure
@@ -333,40 +382,37 @@ public class EntityInstance extends NeuralNetwork {
 	 */
 	public void addPossession(EntityInstance _instance) {
 		this.addNeuralPathway(EntityInstance.PATH_TO_LIST_POSSESSIONS, _instance);
-		NeuralPathway pathToState = this.getContainerState();
-		if (pathToState != null) {
-			State state = (State) pathToState.fireSynapse();
-			EntityInstance subjectsRoot = (EntityInstance) state.getSubjectsRoot().fireSynapse();
-			subjectsRoot.addPossession(_instance);
-		}
+		_instance.addOwner(this);
 	}
 	
 	/**
 	 * <p>
-	 * Returns the {@link NeuralPathway} that links to the {@link State} from which this {@link EntityInstance}
-	 * was discovered. If this {@link EntityInstance} does not point to a {@link State}, null is returned.
+	 * Adds the given _owner {@link EntityInstance} to this {@link EntityInstance}s
+	 * list of owners. See {@link EntityInstance#PATH_TO_LIST_OWNERS} for information
+	 * on owners.
 	 * </p>
+	 * @param _owner
 	 * @return
 	 */
-	public NeuralPathway getContainerState() {
-		NeuralPathway pathToState = this.getNeuralPathway(EntityInstance.PATH_TO_CONTAINER_STATE[0], EntityInstance.PATH_TO_CONTAINER_STATE[1]);
-		return pathToState;
+	public NeuralPathway addOwner(EntityInstance _owner) {
+		NeuralPathway link = this.addNeuralPathway(EntityInstance.PATH_TO_LIST_OWNERS, _owner);
+		return link;
 	}
 	
 	/**
-	 * Sets and returns a link to _state on this {@link EntityInstance}. If _state
-	 * is null or if a {@link State} is already set for this {@link EntityInstance},
-	 * nothing is created and null is returned.
-	 * @param _state
+	 * <p>
+	 * Returns the list of {@link EntityInstance}s that own this {@link EntityInstance}.
+	 * See {@link EntityInstance#PATH_TO_LIST_OWNERS} for information
+	 * on owners.
+	 * </p>
 	 * @return
 	 */
-	public NeuralPathway setContainerState(State _state) {
-		if (_state != null && this.getContainerState() == null) {
-			return this.addNeuralPathway(EntityInstance.PATH_TO_CONTAINER_STATE[0], EntityInstance.PATH_TO_CONTAINER_STATE[1], _state);
-		} else {
-			return null;
-		}
+	public ArrayList<NeuralPathway> getOwners() {
+		return this.getDendriteGroup(EntityInstance.PATH_TO_LIST_OWNERS);
 	}
+	
+	
+	
 	
 	/**
 	 * Adds the given _state to this {@link EntityInstance}s timeline. This effectively adds the state as

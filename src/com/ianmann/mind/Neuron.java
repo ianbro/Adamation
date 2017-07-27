@@ -19,6 +19,7 @@ import com.ianmann.mind.storage.organization.NeuronType;
 import com.ianmann.mind.storage.organization.basicNetwork.entity.AttributeStructure;
 import com.ianmann.mind.storage.organization.basicNetwork.entity.Description;
 import com.ianmann.mind.storage.organization.basicNetwork.entity.EntityStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.state.State;
 import com.ianmann.utils.storage.StorageManageable;
 import com.ianmann.utils.utilities.Files;
 import com.ianmann.utils.utilities.GeneralUtils;
@@ -584,6 +585,8 @@ public class Neuron extends File {
 				return new EntityStructure(_path, _doLoadAttributes);
 			case NeuronType.NOUN_INSTANCE:
 				return new EntityStructure(_path, _doLoadAttributes);
+			case NeuronType.STATE:
+				return new State(_path, _doLoadAttributes);
 			default:
 				throw new NeuralNetworkTypeNotFoundError(type, _path);
 			}

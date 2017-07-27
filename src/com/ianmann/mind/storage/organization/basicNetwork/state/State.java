@@ -13,11 +13,15 @@ import org.json.simple.parser.ParseException;
 import com.ianmann.mind.NeuralPathway;
 import com.ianmann.mind.storage.organization.NeuronType;
 import com.ianmann.mind.storage.organization.basicNetwork.NeuralNetwork;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.AttributeNotFoundException;
 import com.ianmann.mind.storage.organization.basicNetwork.entity.AttributeStructure;
+import com.ianmann.mind.storage.organization.basicNetwork.entity.Description;
 import com.ianmann.mind.storage.organization.basicNetwork.entity.EntityInstance;
 
 /**
  * @TODO: Implement Previous Neuron and document.
+ * - Override methods in {@link EntityInstance} to factor in this being a state.
+ * - Redo documentation. This no longer contains the subject... this IS the subject.
  * <p>
  * Represents the state of an entity. This contains the {@link EntityInstance} for
  * which this state is and the attributes and breakdowns that exist on the {@link State#subject}.
@@ -41,17 +45,12 @@ import com.ianmann.mind.storage.organization.basicNetwork.entity.EntityInstance;
  * Created: Jul 4, 2017
  *
  */
-public class State extends NeuralNetwork {
+public class State extends EntityInstance {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * The {@link EntityInstance} that this {@link State} contains information for.
-	 */
-	private static final int[] PATH_TO_SUBJECT = {0,0};
 	
 	/**
 	 * <p>
@@ -69,13 +68,13 @@ public class State extends NeuralNetwork {
 	 * but they serve different purposes.
 	 * </p>
 	 */
-	private static final int[] PATH_TO_SUBJECTS_ROOT = {0,1};
+	private static final int[] PATH_TO_SUBJECTS_ROOT = {8,1};
 	
 	/**
 	 * Path that links this {@link State} to the {@link TimelineEvent} that that contains
 	 * the rest of the history for this {@link State}s subject.
 	 */
-	private static final int[] PATH_TO_TIMELINE_EVENT = {2,0};
+	private static final int[] PATH_TO_TIMELINE_EVENT = {9,0};
 
 	/**
 	 * <p>
@@ -88,7 +87,7 @@ public class State extends NeuralNetwork {
 	 * @throws FileNotFoundException
 	 * @throws ParseException
 	 */
-	protected State(String _path, boolean _doLoadAttributes) throws FileNotFoundException, ParseException {
+	public State(String _path, boolean _doLoadAttributes) throws FileNotFoundException, ParseException {
 		super(_path, _doLoadAttributes);
 	}
 	
@@ -101,36 +100,43 @@ public class State extends NeuralNetwork {
 	 * will be for. See note above on {@link State#PATH_TO_SUBJECTS_ROOT} for more info.
 	 * @param _label
 	 */
-	protected State(String _path, EntityInstance _subjectsRoot) {
+	public State(String _path, EntityInstance _subjectsRoot) {
 		super(
 			_path, NeuronType.STATE,
-			(_subjectsRoot.getAssociatedMorpheme() != null ? _subjectsRoot.getAssociatedMorpheme() + "_STATE" : null)
+			(_subjectsRoot.getAssociatedMorpheme() != null ? _subjectsRoot.getAssociatedMorpheme() + "_STATE" : null),
+			(_subjectsRoot.getStructure() != null ? _subjectsRoot.getStructure() : null)
 		);
 		this.initializeSubject(_subjectsRoot);
 	}
 	
 	private void initializeSubject(EntityInstance _subjectsRoot) {
-		if (this.getDendriteGroup(State.PATH_TO_SUBJECT[0]).isEmpty()) {
-			String labelForSubject = this.getAssociatedMorpheme() != null ? this.getAssociatedMorpheme() + "_SUBJECT" : null;
-			
-			EntityInstance newInstance = EntityInstance.create(null, labelForSubject);
-			this.addNeuralPathway(State.PATH_TO_SUBJECT[0], State.PATH_TO_SUBJECT[1], newInstance);
-			newInstance.setContainerState(this);
-			
-			this.addNeuralPathway(State.PATH_TO_SUBJECTS_ROOT[0], State.PATH_TO_SUBJECTS_ROOT[1], _subjectsRoot);
-			_subjectsRoot.addStateToTimeline(this);
-		} else {
-			throw new StateSubjectAlreadySetError(this);
-		}
-	}
-	
-	public NeuralPathway getSubject() {
-		NeuralPathway pathway = this.getNeuralPathway(State.PATH_TO_SUBJECT[0], State.PATH_TO_SUBJECT[1]);
-		return pathway;
+		this.addNeuralPathway(State.PATH_TO_SUBJECTS_ROOT[0], State.PATH_TO_SUBJECTS_ROOT[1], _subjectsRoot);
+		_subjectsRoot.addStateToTimeline(this);
 	}
 	
 	public NeuralPathway getSubjectsRoot() {
 		NeuralPathway pathway = this.getNeuralPathway(State.PATH_TO_SUBJECTS_ROOT[0], State.PATH_TO_SUBJECTS_ROOT[1]);
 		return pathway;
+	}
+	
+	@Override
+	public void addDescription(Description _description) throws AttributeNotFoundException {
+		super.addDescription(_description);
+		EntityInstance subjectsRoot = (EntityInstance) this.getSubjectsRoot().fireSynapse();
+		subjectsRoot.addDescription(_description);
+	}
+	
+	@Override
+	public void addBreakdownInstance(EntityInstance _breakdownInstance) throws AttributeNotFoundException  {
+		super.addBreakdownInstance(_breakdownInstance);
+		EntityInstance subjectsRoot = (EntityInstance) this.getSubjectsRoot().fireSynapse();
+		subjectsRoot.addBreakdownInstance(_breakdownInstance);
+	}
+	
+	@Override
+	public void addPossession(EntityInstance _instance) {
+		super.addPossession(_instance);
+		EntityInstance subjectsRoot = (EntityInstance) this.getSubjectsRoot().fireSynapse();
+		subjectsRoot.addPossession(_instance);
 	}
 }

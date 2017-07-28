@@ -34,7 +34,7 @@ This folder (mind) contains the neurons, neural pathways and other information t
 
 Commenting out lines 22 - 28 and uncommenting line 21 will create a definition of a Person (Make sure it's not already created in mind folder. Then, with that created, uncomment line 22 and re comment line 21. Run this and it will instantiate a person and save them as a neural network. Then running line 23 will instantiate a second person. Lines 25 - 28 will alter one of those people.
 
-I am not confident that the latest commit on master will work properly. I'm in the middle of a feature adition. IK IK it's bad practice to push strait to Master, but ATM I'm the only one developing and it's a hassel creating branches. If this changes, I'll start branching. Anyways, The last stable commit is 7236efa34905596c5b2c8cd3f5350e35f1436d98. That WILL run correctly with the Test class above.
+I am not confident that the latest commit on master will work properly. I'm in the middle of a feature adition. IK IK it's bad practice to push strait to Master, but ATM I'm the only one developing and it's a hassel creating branches. If this changes, I'll start branching. Anyways, The last stable commit is https://github.com/ianbro/Adamation/commit/7236efa34905596c5b2c8cd3f5350e35f1436d98. That WILL run correctly with the Test class above.
 
 ### Production
 Coming soon! (more like a long time from now, let's be honest.)

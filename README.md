@@ -7,6 +7,38 @@ AI designed for conversation with emotional reactions
 	
 	Adamation design umls can be found in the design folder of this project. Style preferences are found in design/written_thoughts/style_preferences.txt
 	
+## Running Adamation
+### Development
+1. Install eclipse, java and the java sdk
+	a. https://www.eclipse.org/downloads/
+	b. https://java.com/en/
+	c. http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html (requires Java SE 1.7 or later. You can probably get away with an earlier version but I am developing on 1.7)
+	
+2. Install the maven plugin in the Eclipse Market Place. https://stackoverflow.com/questions/8620127/maven-in-eclipse-step-by-step-installation
+
+3. Refresh maven to download and install needed software. https://stackoverflow.com/questions/2555845/how-to-update-maven-repository-in-eclipse
+
+4. Ensure that your project folder "Adamation" contains a folder called "mind" with the following structure:
+	- mind
+		- storage
+			- neurons
+				- ids
+					- This file (ids) must only have a single number in it. Start with 1
+			- pathways
+				- ids
+					- This file (ids) must only have a single number in it. Start with 1
+					
+This folder (mind) contains the neurons, neural pathways and other information that Adamation creates and saves.
+
+5. There is no actual main yet but I have a couple that test certain aspects of the code. One is "https://github.com/ianbro/Adamation/blob/master/src/test/ianmann/mind/TestNounsAndAttributes.java". This will test relationships between neurons to create noun definitions.
+
+Commenting out lines 22 - 28 and uncommenting line 21 will create a definition of a Person (Make sure it's not already created in mind folder. Then, with that created, uncomment line 22 and re comment line 21. Run this and it will instantiate a person and save them as a neural network. Then running line 23 will instantiate a second person. Lines 25 - 28 will alter one of those people.
+
+I am not confident that the latest commit on master will work properly. I'm in the middle of a feature adition. IK IK it's bad practice to push strait to Master, but ATM I'm the only one developing and it's a hassel creating branches. If this changes, I'll start branching. Anyways, The last stable commit is https://github.com/ianbro/Adamation/commit/7236efa34905596c5b2c8cd3f5350e35f1436d98. That WILL run correctly with the Test class above.
+
+### Production
+Coming soon! (more like a long time from now, let's be honest.)
+	
 ## Resources
 	https://www.youtube.com/watch?v=nalDtxyAuU8
 		- Focuses on non-memory neurons (body control)

@@ -12,7 +12,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import com.ianmann.mind.core.Constants;
+import com.ianmann.mind.core.Config;
 import com.ianmann.mind.exceptions.FileNotDeletedError;
 import com.ianmann.mind.exceptions.NeuralNetworkTypeNotFoundError;
 import com.ianmann.mind.storage.organization.NeuronType;
@@ -173,7 +173,7 @@ public class Neuron extends File {
 	 * @throws FileNotFoundException 
 	 */
 	protected Neuron(String _pathFromNeuronRoot, boolean _doLoadAttributes) throws FileNotFoundException, ParseException {
-		super(Constants.NEURON_ROOT + _pathFromNeuronRoot);
+		super(Config.NEURON_ROOT + _pathFromNeuronRoot);
 		if (_doLoadAttributes) {
 			this.loadAttributes();
 		}
@@ -261,16 +261,16 @@ public class Neuron extends File {
 	 * id will be used instead of _label.
 	 */
 	protected static String getNewFileLocation(String _label) {
-		String pathToNeurons = Constants.NEURON_ROOT;
+		String pathToNeurons = Config.NEURON_ROOT;
 		try {
 			if (_label != null) {
 				return pathToNeurons + _label + ".nrn";
 			} else {
 				Scanner s;
-				s = new Scanner(new File(Constants.NEURON_ROOT + "ids"));
+				s = new Scanner(new File(Config.NEURON_ROOT + "ids"));
 				int next = s.nextInt();
 				s.close();
-				PrintWriter p = new PrintWriter(new File(Constants.NEURON_ROOT + "ids"));
+				PrintWriter p = new PrintWriter(new File(Config.NEURON_ROOT + "ids"));
 				p.print(next+1);
 				p.close();
 				return pathToNeurons + String.valueOf(next) + ".nrn";
@@ -612,7 +612,7 @@ public class Neuron extends File {
 				(
 					(JSONArray) ((JSONArray) neuronJson.get("axon"))
 						.get(i)
-				).add(synapse.getAbsolutePathForwardSlash().split(Constants.PATHWAY_ROOT)[1]);
+				).add(synapse.getAbsolutePathForwardSlash().split(Config.PATHWAY_ROOT)[1]);
 			}
 		}
 		
@@ -647,7 +647,7 @@ public class Neuron extends File {
 	 */
 	protected String getPathFromNeuronRoot() {
 		String absolutePathForwardSlash = this.getAbsolutePathForwardSlash();
-		String[] pathSplit = absolutePathForwardSlash.split(Constants.NEURON_ROOT);
+		String[] pathSplit = absolutePathForwardSlash.split(Config.NEURON_ROOT);
 		return pathSplit[1];
 	}
 	

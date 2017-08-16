@@ -12,7 +12,8 @@ import java.util.Scanner;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import com.ianmann.mind.core.Constants;
+import com.ianmann.mind.core.Config;
+import com.ianmann.mind.storage.organization.basicNetwork.NeuralNetwork;
 import com.ianmann.utils.storage.StorageManageable;
 import com.ianmann.utils.utilities.Files;
 import com.ianmann.utils.utilities.JSONUtils;
@@ -31,11 +32,11 @@ public class NeuralPathway extends File {
 	public static NeuralPathwayManager storage = new NeuralPathwayManager();
 	
 	/**
-	 * double used to represent size of pathway. If the value of this
-	 * is large, then the AI will follow this pathway over another
-	 * smaller connection.
+	 * double used to represent resistance of the pathway to incoming requests
+	 * to fire this synaptic connection. The higher the resistance, the less
+	 * likely a chance that this connection will succeed in firing.
 	 */
-	private double connectionSize;
+	private double connectionResistanceFactor;
 	/**
 	 * The amount of size that {@code NeuralPathway.connectionSize}
 	 * goes up or down by.
@@ -169,7 +170,7 @@ public class NeuralPathway extends File {
 	 * @throws FileNotFoundException 
 	 */
 	protected NeuralPathway(String _pathFromPathwayRoot, boolean _doLoadAttributes) throws FileNotFoundException, ParseException {
-		super(Constants.PATHWAY_ROOT + _pathFromPathwayRoot);
+		super(Config.PATHWAY_ROOT + _pathFromPathwayRoot);
 		if (_doLoadAttributes) {
 			this.loadAttributes();
 		}
@@ -205,13 +206,13 @@ public class NeuralPathway extends File {
 	protected static String getNewFileLocation() {
 		Scanner s;
 		try {
-			s = new Scanner(new File(Constants.PATHWAY_ROOT + "ids"));
+			s = new Scanner(new File(Config.PATHWAY_ROOT + "ids"));
 			int next = s.nextInt();
 			s.close();
-			PrintWriter p = new PrintWriter(new File(Constants.PATHWAY_ROOT + "ids"));
+			PrintWriter p = new PrintWriter(new File(Config.PATHWAY_ROOT + "ids"));
 			p.print(next+1);
 			p.close();
-			return Constants.PATHWAY_ROOT + String.valueOf(next) + ".tlink";
+			return Config.PATHWAY_ROOT + String.valueOf(next) + ".tlink";
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -290,7 +291,7 @@ public class NeuralPathway extends File {
 	 * @return
 	 */
 	protected String getPathFromPathwayRoot() {
-		return this.getAbsolutePathForwardSlash().split(Constants.PATHWAY_ROOT)[1];
+		return this.getAbsolutePathForwardSlash().split(Config.PATHWAY_ROOT)[1];
 	}
 	
 	/**

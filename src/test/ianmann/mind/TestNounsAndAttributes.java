@@ -3,7 +3,7 @@ package test.ianmann.mind;
 import java.io.FileNotFoundException;
 import org.json.simple.parser.ParseException;
 
-import com.ianmann.mind.core.Constants;
+import com.ianmann.mind.core.Config;
 import com.ianmann.mind.storage.ShortTermMemory;
 import com.ianmann.mind.storage.organization.basicNetwork.entity.AttributeNotFoundException;
 import com.ianmann.mind.storage.organization.basicNetwork.entity.AttributeStructure;
@@ -15,7 +15,7 @@ public abstract class TestNounsAndAttributes {
 
 	public static void main(String[] args) throws FileNotFoundException, ParseException, AttributeNotFoundException {
 		// TODO Auto-generated method stub
-		Constants.readStorageVariables();
+		Config.readStorageVariables();
 		ShortTermMemory.initialize();
 
 //		generatePersonNetwork();
